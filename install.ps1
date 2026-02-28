@@ -213,10 +213,17 @@ if (Test-Path $pipExe) {
     }
 
     Write-Host "         Running get-pip.py ..."
-    try {
-        & $PythonExe $getPipPath --no-warn-script-location 2>&1 | Out-Null
-    } catch {
-        Write-Error "Failed to bootstrap pip: $_"
+    $prevErrorPref = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    $getPipOutput = & $PythonExe $getPipPath --no-warn-script-location 2>&1
+    $getPipExitCode = $LASTEXITCODE
+    $ErrorActionPreference = $prevErrorPref
+
+    if ($getPipExitCode -ne 0) {
+        Write-Host ""
+        $getPipOutput | ForEach-Object { Write-Host "         $_" }
+        Write-Host ""
+        Write-Error "Failed to bootstrap pip (exit code $getPipExitCode)."
         exit 1
     }
 
@@ -247,14 +254,22 @@ if ($localSource) {
     $installTarget = $GitHubArchiveUrl
 }
 
-try {
-    & $PythonExe -m pip install $installTarget --no-warn-script-location --quiet 2>&1 | ForEach-Object {
-        if ($_ -match "error|ERROR|Error") { Write-Host "         $_" }
-    }
-} catch {
-    Write-Error "Failed to install Vitia Invenire: $_"
+$prevErrorPref = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+$pipOutput = & $PythonExe -m pip install $installTarget --no-warn-script-location 2>&1
+$pipExitCode = $LASTEXITCODE
+$ErrorActionPreference = $prevErrorPref
+
+if ($pipExitCode -ne 0) {
+    Write-Host ""
+    Write-Host "         pip install failed (exit code $pipExitCode):"
+    $pipOutput | ForEach-Object { Write-Host "         $_" }
+    Write-Host ""
+    Write-Error "Failed to install Vitia Invenire. See output above."
     exit 1
 }
+
+Write-Host "         Installed successfully."
 
 # ---------------------------------------------------------------------------
 # Verify installation
