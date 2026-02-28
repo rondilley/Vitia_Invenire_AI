@@ -1,0 +1,58 @@
+categories:
+  enabled:
+    - all
+
+checks:
+  disabled: []
+
+  CERT-001:
+    known_good_certs_path: null
+    known_bad_certs_path: null
+
+  HASH-001:
+    nsrl_db_path: null
+    vt_api_key: null
+    vt_rate_limit: 4
+    vt_daily_limit: 500
+
+  BIN-001:
+    scan_paths:
+      - "C:\\Windows\\System32"
+      - "C:\\Windows\\SysWOW64"
+      - "C:\\Windows\\System32\\drivers"
+      - "C:\\Program Files"
+      - "C:\\Program Files (x86)"
+    extensions:
+      - ".exe"
+      - ".dll"
+      - ".sys"
+      - ".ocx"
+    max_threads: 4
+
+  NMAP-001:
+    scan_args: "-sV -sC --script smb-vuln-ms17-010,smb-security-mode"
+    target: "127.0.0.1"
+
+  NESSUS-001:
+    host: "localhost"
+    port: 8834
+    access_key: null
+    secret_key: null
+    policy_name: "Advanced Scan"
+    scan_timeout: 3600
+
+  CIS-001:
+    ciscat_path: null
+    benchmark: "CIS_Microsoft_Windows_11_Enterprise"
+
+  HK-001:
+    finding_list: "finding_list_cis_microsoft_windows_11_enterprise_22h2_machine"
+
+severity:
+  minimum: INFO
+
+output:
+  formats:
+    - console
+    - json
+  directory: ./reports

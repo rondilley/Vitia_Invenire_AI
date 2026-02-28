@@ -1,0 +1,157 @@
+[
+  {
+    "port": 4444,
+    "name": "Metasploit Default",
+    "description": "Default reverse shell listener port for Metasploit Framework"
+  },
+  {
+    "port": 4445,
+    "name": "Metasploit Reverse",
+    "description": "Alternate Metasploit reverse handler port"
+  },
+  {
+    "port": 50050,
+    "name": "Cobalt Strike",
+    "description": "Default Cobalt Strike team server listener port"
+  },
+  {
+    "port": 31337,
+    "name": "Back Orifice",
+    "description": "Classic Back Orifice remote access trojan default port"
+  },
+  {
+    "port": 1337,
+    "name": "Elite / Generic Backdoor",
+    "description": "Common backdoor port associated with various malware families"
+  },
+  {
+    "port": 8443,
+    "name": "HTTPS Alternate / C2",
+    "description": "Alternative HTTPS port commonly used by C2 frameworks including Cobalt Strike"
+  },
+  {
+    "port": 8080,
+    "name": "HTTP Proxy / C2",
+    "description": "Common HTTP proxy port also used by C2 frameworks and web shells"
+  },
+  {
+    "port": 3389,
+    "name": "RDP",
+    "description": "Remote Desktop Protocol - legitimate but frequently targeted for unauthorized access"
+  },
+  {
+    "port": 5900,
+    "name": "VNC",
+    "description": "Virtual Network Computing default port - remote desktop access"
+  },
+  {
+    "port": 5985,
+    "name": "WinRM HTTP",
+    "description": "Windows Remote Management over HTTP - PowerShell remoting"
+  },
+  {
+    "port": 5986,
+    "name": "WinRM HTTPS",
+    "description": "Windows Remote Management over HTTPS - PowerShell remoting"
+  },
+  {
+    "port": 22,
+    "name": "SSH",
+    "description": "Secure Shell - unusual on Windows unless OpenSSH is intentionally installed"
+  },
+  {
+    "port": 53,
+    "name": "DNS Tunneling",
+    "description": "DNS port - unexpected listeners may indicate DNS tunneling for data exfiltration"
+  },
+  {
+    "port": 6666,
+    "name": "IRC / Backdoor",
+    "description": "IRC port commonly used by IRC-based botnets and backdoors"
+  },
+  {
+    "port": 6667,
+    "name": "IRC Default",
+    "description": "Default IRC port used by botnet command-and-control channels"
+  },
+  {
+    "port": 6697,
+    "name": "IRC SSL",
+    "description": "IRC over TLS/SSL - used by encrypted botnet communications"
+  },
+  {
+    "port": 9001,
+    "name": "Tor Default ORPort",
+    "description": "Default Tor relay ORPort - may indicate Tor relay or hidden service"
+  },
+  {
+    "port": 9050,
+    "name": "Tor SOCKS",
+    "description": "Default Tor SOCKS proxy port - indicates Tor client is running"
+  },
+  {
+    "port": 9051,
+    "name": "Tor Control",
+    "description": "Tor control port for managing Tor process programmatically"
+  },
+  {
+    "port": 1234,
+    "name": "Generic Backdoor",
+    "description": "Common backdoor port used by various trojans and reverse shells"
+  },
+  {
+    "port": 12345,
+    "name": "NetBus",
+    "description": "NetBus remote access trojan default port"
+  },
+  {
+    "port": 27374,
+    "name": "Sub7",
+    "description": "Sub7 (SubSeven) remote access trojan default port"
+  },
+  {
+    "port": 1080,
+    "name": "SOCKS Proxy",
+    "description": "SOCKS proxy port - may indicate proxy pivoting or tunneling"
+  },
+  {
+    "port": 3128,
+    "name": "HTTP Proxy (Squid)",
+    "description": "Common HTTP proxy port - may indicate traffic interception or pivoting"
+  },
+  {
+    "port": 7443,
+    "name": "Splinter C2",
+    "description": "Port used by several C2 frameworks as alternate HTTPS listener"
+  },
+  {
+    "port": 2222,
+    "name": "Alternate SSH",
+    "description": "Alternative SSH port commonly used to avoid detection"
+  },
+  {
+    "port": 13337,
+    "name": "Backdoor Variant",
+    "description": "Variant of the classic 1337/31337 backdoor ports"
+  },
+  {
+    "port": 4443,
+    "name": "Alternate HTTPS / C2",
+    "description": "Alternate HTTPS port used by Meterpreter and other C2 payloads"
+  },
+  {
+    "port": 8888,
+    "name": "Alternate HTTP / C2",
+    "description": "Alternate HTTP port used by various C2 frameworks"
+  },
+  {
+    "port": 55553,
+    "name": "Meterpreter",
+    "description": "Alternate Meterpreter handler port"
+  },
+  {
+    "port": 41337,
+    "name": "Poisoned Handler",
+    "description": "Common port used in advanced persistent threat toolkits"
+  }
+]

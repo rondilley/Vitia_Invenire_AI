@@ -1,0 +1,100 @@
+[
+  {
+    "thumbprint": "C864484869D41D2B0D32319C5A62F9315AAF2CBD",
+    "name": "Superfish Inc.",
+    "description": "Superfish Visual Search root CA installed by Lenovo on consumer laptops. Enables TLS interception via self-signed proxy certificates. Private key was trivially extractable.",
+    "severity": "CRITICAL",
+    "reference": "https://support.lenovo.com/us/en/product_security/superfish"
+  },
+  {
+    "thumbprint": "98A04E4163357790C4A79E6D713FF0AF51FE6927",
+    "name": "eDellRoot",
+    "description": "Dell self-signed root CA pre-installed on Dell systems. Private key was embedded in the certificate store and identical across all affected machines.",
+    "severity": "CRITICAL",
+    "reference": "https://www.dell.com/support/kbdoc/en-us/000178092/edellroot-certificate"
+  },
+  {
+    "thumbprint": "C3AB1F0F02D990EF10F64EF196D78C4FBE1A6308",
+    "name": "DSDTestProvider (eDellRoot variant)",
+    "description": "Another Dell self-signed root CA (DSD Test Provider) found on Dell systems with similar private key exposure issues.",
+    "severity": "CRITICAL",
+    "reference": "https://www.dell.com/support/kbdoc/en-us/000178092/edellroot-certificate"
+  },
+  {
+    "thumbprint": "0921A3A68A112F2B3540D2B7D038190E17FBE8BF",
+    "name": "Komodia SSL Digestor",
+    "description": "Komodia SSL Digestor root CA used by multiple ad-injection and parental control products to perform TLS interception. Known weak implementation with shared private keys.",
+    "severity": "CRITICAL",
+    "reference": "https://blog.filippo.io/komodia-superfish-ssl-validation-is-broken/"
+  },
+  {
+    "thumbprint": "F62E3B5F37B35D92A0E36BA0C330A1EE655B35CF",
+    "name": "PrivDog",
+    "description": "PrivDog ad-replacement software root CA that replaced website ads with its own. Contained critical TLS validation vulnerability.",
+    "severity": "CRITICAL",
+    "reference": "https://blog.hboeck.de/archives/865-software-Privdog-worse-than-Superfish.html"
+  },
+  {
+    "thumbprint": "7A20E06B0F5F60AC68D07C8B4D79FEBC1068DDCC",
+    "name": "Sennheiser HeadSetup",
+    "description": "Sennheiser HeadSetup software installed a root CA with an extractable private key for local TLS communication. Same certificate and key used across all installations.",
+    "severity": "CRITICAL",
+    "reference": "https://www.secorvo.de/publikationen/headsetup-vulnerability-2018.pdf"
+  },
+  {
+    "thumbprint": "4D8D39B7ACED46C7B5A6C6A62BEB6DCED7AC59D9",
+    "name": "Sennheiser HeadSetup (CA 2)",
+    "description": "Second Sennheiser HeadSetup root certificate with same private key exposure vulnerability.",
+    "severity": "CRITICAL",
+    "reference": "https://www.secorvo.de/publikationen/headsetup-vulnerability-2018.pdf"
+  },
+  {
+    "thumbprint": "57E7E5762FBC03E098B1180C3C32F19C90E83187",
+    "name": "CNNIC ROOT",
+    "description": "China Internet Network Information Center (CNNIC) root CA. Distrusted by major browsers after an intermediate CA issued unauthorized certificates for Google domains.",
+    "severity": "HIGH",
+    "reference": "https://security.googleblog.com/2015/03/maintaining-digital-certificate-security.html"
+  },
+  {
+    "thumbprint": "1AF56C98F01DE033C41A2C799D4083A82ABFE2B2",
+    "name": "WoSign Root CA",
+    "description": "WoSign root CA distrusted by major browsers due to multiple certificate mis-issuance incidents and backdating SHA-1 certificates.",
+    "severity": "HIGH",
+    "reference": "https://wiki.mozilla.org/CA:WoSign_Issues"
+  },
+  {
+    "thumbprint": "A7B1A5967DAADC11254DFE07BFDC607DABBD15BD",
+    "name": "StartCom Certification Authority",
+    "description": "StartCom root CA distrusted by major browsers due to shared infrastructure and control with WoSign.",
+    "severity": "HIGH",
+    "reference": "https://wiki.mozilla.org/CA:WoSign_Issues"
+  },
+  {
+    "thumbprint": "D8EBD6B48C925F30F15D5CC8CA7D1CB14A7E355C",
+    "name": "Ad-Aware Web Companion",
+    "description": "Lavasoft Ad-Aware Web Companion root CA used for TLS interception. Uses Komodia SDK with known weak cryptographic implementation.",
+    "severity": "CRITICAL",
+    "reference": "https://en.wikipedia.org/wiki/Komodia#Products_using_Komodia_technology"
+  },
+  {
+    "thumbprint": "42EFDDE6BFF35ED0BAE6ACDD204C50AE86C4F4FA",
+    "name": "Wajam",
+    "description": "Wajam Internet Technologies root CA installed by Wajam social search adware for TLS interception.",
+    "severity": "CRITICAL",
+    "reference": "https://www.gdatasoftware.com/blog/2015/02/24337-wajam-social-search-engine-with-superfish-ssl-interceptor"
+  },
+  {
+    "thumbprint": "9FDBAE289C7EB3B0BC64A7E76FFE3E6C0B456B96",
+    "name": "Gogo Inflight Internet",
+    "description": "Gogo in-flight WiFi root CA used for TLS interception of passenger internet traffic.",
+    "severity": "HIGH",
+    "reference": "https://blog.erratasec.com/2015/01/gogos-man-in-middle-attack.html"
+  },
+  {
+    "thumbprint": "2F173F7DE99667AFA57AF80AA2D1B12FAC830338",
+    "name": "Samsung KNOX",
+    "description": "Samsung KNOX enterprise root CA found pre-installed on some Samsung consumer devices outside of managed enterprise deployments.",
+    "severity": "MEDIUM",
+    "reference": "https://www.samsung.com/semiconductor/minisite/ssd/resources/white-paper/"
+  }
+]

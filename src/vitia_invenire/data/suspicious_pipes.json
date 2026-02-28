@@ -1,0 +1,122 @@
+[
+  {
+    "pattern": "postex_",
+    "name": "Cobalt Strike Post-Exploitation Pipe",
+    "description": "Default named pipe prefix used by Cobalt Strike post-exploitation jobs for inter-process communication",
+    "framework": "Cobalt Strike"
+  },
+  {
+    "pattern": "status_",
+    "name": "Cobalt Strike Status Pipe",
+    "description": "Default named pipe prefix used by Cobalt Strike for status communication between beacon and operator",
+    "framework": "Cobalt Strike"
+  },
+  {
+    "pattern": "msse-",
+    "name": "Cobalt Strike SMB Beacon",
+    "description": "Default named pipe prefix for Cobalt Strike SMB beacon lateral movement, mimics Microsoft Security Essentials naming",
+    "framework": "Cobalt Strike"
+  },
+  {
+    "pattern": "MSSE-",
+    "name": "Cobalt Strike SMB Beacon (uppercase)",
+    "description": "Uppercase variant of the Cobalt Strike SMB beacon named pipe prefix",
+    "framework": "Cobalt Strike"
+  },
+  {
+    "pattern": "msagent_",
+    "name": "Cobalt Strike Agent Pipe",
+    "description": "Named pipe prefix used by Cobalt Strike agent communication channel",
+    "framework": "Cobalt Strike"
+  },
+  {
+    "pattern": "mojo.",
+    "name": "Cobalt Strike Mojo Pipe",
+    "description": "Named pipe prefix used by Cobalt Strike that mimics Chromium IPC mojo pipes",
+    "framework": "Cobalt Strike"
+  },
+  {
+    "pattern": "psexesvc",
+    "name": "PsExec Service Pipe",
+    "description": "Named pipe created by Sysinternals PsExec for remote command execution, also used by attackers for lateral movement",
+    "framework": "PsExec"
+  },
+  {
+    "pattern": "interprocess_",
+    "name": "Generic C2 Inter-Process Pipe",
+    "description": "Generic named pipe prefix commonly used by command and control implants for inter-process communication",
+    "framework": "Generic C2"
+  },
+  {
+    "pattern": "ntsvcs",
+    "name": "Common C2 Pipe (ntsvcs)",
+    "description": "Named pipe name commonly used by C2 frameworks mimicking legitimate Windows service pipes",
+    "framework": "Generic C2"
+  },
+  {
+    "pattern": "scerpc",
+    "name": "Common C2 Pipe (scerpc)",
+    "description": "Named pipe name commonly used by C2 frameworks mimicking legitimate Windows security RPC pipes",
+    "framework": "Generic C2"
+  },
+  {
+    "pattern": "win\\srvsvc",
+    "name": "Metasploit/Meterpreter Pipe",
+    "description": "Named pipe pattern used by Metasploit Meterpreter reverse_named_pipe payloads",
+    "framework": "Metasploit"
+  },
+  {
+    "pattern": "meterpreter",
+    "name": "Meterpreter Named Pipe",
+    "description": "Named pipe containing the meterpreter identifier, used by Metasploit payloads",
+    "framework": "Metasploit"
+  },
+  {
+    "pattern": "lsadump",
+    "name": "Credential Dumping Pipe",
+    "description": "Named pipe associated with credential dumping tools such as Mimikatz for LSASS interaction",
+    "framework": "Mimikatz"
+  },
+  {
+    "pattern": "demoagent_",
+    "name": "Covenant C2 Pipe",
+    "description": "Default named pipe prefix used by Covenant C2 framework grunt implants",
+    "framework": "Covenant"
+  },
+  {
+    "pattern": "crackmapexec",
+    "name": "CrackMapExec Pipe",
+    "description": "Named pipe associated with CrackMapExec lateral movement and credential harvesting tool",
+    "framework": "CrackMapExec"
+  },
+  {
+    "pattern": "sliverenc_",
+    "name": "Sliver C2 Named Pipe",
+    "description": "Named pipe prefix used by Sliver C2 framework implants for encrypted communication",
+    "framework": "Sliver"
+  },
+  {
+    "pattern": "winsock",
+    "name": "Cobalt Strike Winsock Pipe",
+    "description": "Named pipe using winsock prefix for Cobalt Strike pivot listener communication",
+    "framework": "Cobalt Strike"
+  },
+  {
+    "pattern": "atsvc",
+    "name": "AT Service Abuse Pipe",
+    "description": "Named pipe associated with the AT scheduler service, often abused for lateral movement and persistence",
+    "framework": "Generic C2"
+  },
+  {
+    "pattern": "spoolss_",
+    "name": "Print Spooler Abuse Pipe",
+    "description": "Named pipe mimicking the print spooler service pipe, used by exploitation frameworks for PrintNightmare and related attacks",
+    "framework": "Generic C2"
+  },
+  {
+    "pattern": "cobaltstrike",
+    "name": "Cobalt Strike Explicit Pipe",
+    "description": "Named pipe explicitly containing cobaltstrike identifier, sometimes seen in misconfigured deployments",
+    "framework": "Cobalt Strike"
+  }
+]

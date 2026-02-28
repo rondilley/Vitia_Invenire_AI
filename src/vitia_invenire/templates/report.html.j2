@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vitia Invenire - Assessment Report - {{ report.hostname }}</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f5f6fa; color: #2c3e50; line-height: 1.6; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+  h1 { font-size: 1.8em; margin-bottom: 5px; }
+  h2 { font-size: 1.3em; margin: 25px 0 10px; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
+  h3 { font-size: 1.1em; margin: 15px 0 8px; }
+  .header { background: #2c3e50; color: white; padding: 20px; margin-bottom: 20px; }
+  .header .meta { font-size: 0.9em; opacity: 0.8; margin-top: 5px; }
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 15px 0; }
+  .summary-card { background: white; border-radius: 6px; padding: 15px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .summary-card .count { font-size: 2em; font-weight: bold; }
+  .summary-card .label { font-size: 0.85em; text-transform: uppercase; opacity: 0.7; }
+  .status-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0; }
+  .status-card { background: white; border-radius: 6px; padding: 12px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .status-card .count { font-size: 1.5em; font-weight: bold; }
+  table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 10px 0; }
+  th { background: #34495e; color: white; padding: 10px 12px; text-align: left; font-size: 0.85em; text-transform: uppercase; }
+  td { padding: 8px 12px; border-bottom: 1px solid #ecf0f1; font-size: 0.9em; }
+  tr:hover { background: #f8f9fa; }
+  .sev { display: inline-block; padding: 2px 8px; border-radius: 3px; color: white; font-size: 0.8em; font-weight: bold; min-width: 70px; text-align: center; }
+  .sev-CRITICAL { background: {{ severity_colors.CRITICAL }}; }
+  .sev-HIGH { background: {{ severity_colors.HIGH }}; }
+  .sev-MEDIUM { background: {{ severity_colors.MEDIUM }}; }
+  .sev-LOW { background: {{ severity_colors.LOW }}; }
+  .sev-INFO { background: {{ severity_colors.INFO }}; }
+  .status { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 0.8em; font-weight: bold; }
+  .status-passed { background: #27ae60; color: white; }
+  .status-failed { background: #e74c3c; color: white; }
+  .status-error { background: #8e44ad; color: white; }
+  .status-skipped { background: #bdc3c7; color: #2c3e50; }
+  .finding-detail { background: #f8f9fa; border-left: 4px solid #3498db; padding: 12px; margin: 8px 0; }
+  .finding-detail.sev-border-CRITICAL { border-left-color: {{ severity_colors.CRITICAL }}; }
+  .finding-detail.sev-border-HIGH { border-left-color: {{ severity_colors.HIGH }}; }
+  .finding-detail.sev-border-MEDIUM { border-left-color: {{ severity_colors.MEDIUM }}; }
+  .finding-detail.sev-border-LOW { border-left-color: {{ severity_colors.LOW }}; }
+  .finding-detail.sev-border-INFO { border-left-color: {{ severity_colors.INFO }}; }
+  .finding-field { margin: 4px 0; }
+  .finding-field strong { display: inline-block; min-width: 120px; }
+  .evidence { background: #2c3e50; color: #ecf0f1; padding: 8px 12px; border-radius: 4px; font-family: monospace; font-size: 0.85em; white-space: pre-wrap; word-break: break-all; max-height: 200px; overflow-y: auto; margin: 5px 0; }
+  details { margin: 5px 0; }
+  details summary { cursor: pointer; font-weight: bold; padding: 4px 0; }
+  .filters { margin: 10px 0; }
+  .filters label { margin-right: 15px; font-size: 0.9em; }
+  .filters input[type="checkbox"] { margin-right: 4px; }
+  @media print {
+    body { background: white; }
+    .header { background: #2c3e50 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .no-print { display: none; }
+    .finding-detail { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="container">
+    <h1>Vitia Invenire - Security Assessment Report</h1>
+    <div class="meta">
+      Host: {{ report.hostname }} |
+      OS: {{ report.os_version }} |
+      Scan: {{ report.scan_start.strftime('%Y-%m-%d %H:%M:%S UTC') }} |
+      Duration: {{ duration }}s |
+      Report ID: {{ report.report_id }}
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<h2>Executive Summary</h2>
+
+<div class="summary-grid">
+  {% for sev in severities %}
+  <div class="summary-card">
+    <div class="count" style="color: {{ severity_colors[sev] }}">{{ report.summary.get(sev, 0) }}</div>
+    <div class="label">{{ sev }}</div>
+  </div>
+  {% endfor %}
+  <div class="summary-card">
+    <div class="count">{{ total_findings }}</div>
+    <div class="label">Total Findings</div>
+  </div>
+</div>
+
+<div class="status-grid">
+  <div class="status-card">
+    <div class="count" style="color: #27ae60">{{ passed }}</div>
+    <div class="label">Passed</div>
+  </div>
+  <div class="status-card">
+    <div class="count" style="color: #e74c3c">{{ failed }}</div>
+    <div class="label">Failed</div>
+  </div>
+  <div class="status-card">
+    <div class="count" style="color: #8e44ad">{{ errored }}</div>
+    <div class="label">Errors</div>
+  </div>
+  <div class="status-card">
+    <div class="count" style="color: #95a5a6">{{ skipped }}</div>
+    <div class="label">Skipped</div>
+  </div>
+</div>
+
+{% if category_counts %}
+<h2>Findings by Category</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Category</th>
+      {% for sev in severities %}
+      <th>{{ sev }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for cat, counts in category_counts.items() %}
+    <tr>
+      <td>{{ cat }}</td>
+      {% for sev in severities %}
+      <td>{% if counts.get(sev, 0) > 0 %}<span class="sev sev-{{ sev }}">{{ counts[sev] }}</span>{% else %}0{% endif %}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
+<h2>Check Results</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Check ID</th>
+      <th>Name</th>
+      <th>Category</th>
+      <th>Status</th>
+      <th>Findings</th>
+      <th>Time (s)</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for result in report.results %}
+    <tr>
+      <td>{{ result.check_id }}</td>
+      <td>{{ result.check_name }}</td>
+      <td>{{ result.category.value }}</td>
+      <td><span class="status status-{{ result.status }}">{{ result.status }}</span></td>
+      <td>{{ result.findings | length }}</td>
+      <td>{{ "%.1f"|format(result.duration_seconds) }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if all_findings %}
+<h2>Findings Detail</h2>
+
+{% for finding in all_findings %}
+<div class="finding-detail sev-border-{{ finding.severity.value }}">
+  <h3>
+    <span class="sev sev-{{ finding.severity.value }}">{{ finding.severity.value }}</span>
+    {{ finding.title }}
+  </h3>
+  <div class="finding-field"><strong>Check:</strong> {{ finding.check_id }}</div>
+  <div class="finding-field"><strong>Category:</strong> {{ finding.category.value }}</div>
+  <div class="finding-field"><strong>Affected:</strong> {{ finding.affected_item }}</div>
+  <div class="finding-field"><strong>Description:</strong> {{ finding.description }}</div>
+  <details>
+    <summary>Evidence</summary>
+    <div class="evidence">{{ finding.evidence }}</div>
+  </details>
+  <div class="finding-field"><strong>Recommendation:</strong> {{ finding.recommendation }}</div>
+  {% if finding.references %}
+  <div class="finding-field"><strong>References:</strong> {{ finding.references | join(', ') }}</div>
+  {% endif %}
+  {% if finding.cvss_score is not none %}
+  <div class="finding-field"><strong>CVSS:</strong> {{ finding.cvss_score }} ({{ finding.cvss_vector }})</div>
+  {% endif %}
+</div>
+{% endfor %}
+{% endif %}
+
+{% if report.hardware_fingerprint %}
+<h2>Hardware Fingerprint</h2>
+<table>
+  <tbody>
+    <tr><td><strong>Manufacturer</strong></td><td>{{ report.hardware_fingerprint.system_manufacturer }}</td></tr>
+    <tr><td><strong>Model</strong></td><td>{{ report.hardware_fingerprint.system_model }}</td></tr>
+    <tr><td><strong>Serial</strong></td><td>{{ report.hardware_fingerprint.system_serial }}</td></tr>
+    <tr><td><strong>UUID</strong></td><td>{{ report.hardware_fingerprint.system_uuid }}</td></tr>
+    <tr><td><strong>BIOS</strong></td><td>{{ report.hardware_fingerprint.bios_vendor }} {{ report.hardware_fingerprint.bios_version }}</td></tr>
+    {% if report.hardware_fingerprint.ec_version %}
+    <tr><td><strong>EC Version</strong></td><td>{{ report.hardware_fingerprint.ec_version }}</td></tr>
+    {% endif %}
+    <tr><td><strong>Secure Boot</strong></td><td>{{ report.hardware_fingerprint.secure_boot_enabled }}</td></tr>
+    <tr><td><strong>TPM</strong></td><td>{{ report.hardware_fingerprint.tpm_version }} ({{ report.hardware_fingerprint.tpm_manufacturer }})</td></tr>
+  </tbody>
+</table>
+
+{% if report.hardware_fingerprint.components %}
+<h3>Components ({{ report.hardware_fingerprint.components | length }})</h3>
+<table>
+  <thead>
+    <tr><th>Type</th><th>Manufacturer</th><th>Model</th><th>Firmware</th><th>Driver</th></tr>
+  </thead>
+  <tbody>
+    {% for comp in report.hardware_fingerprint.components %}
+    <tr>
+      <td>{{ comp.component_type }}</td>
+      <td>{{ comp.manufacturer }}</td>
+      <td>{{ comp.model }}</td>
+      <td>{{ comp.firmware_version or '-' }}</td>
+      <td>{{ comp.driver_version or '-' }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endif %}
+{% endif %}
+
+<div style="margin-top: 30px; padding: 15px; background: #ecf0f1; border-radius: 6px; font-size: 0.85em;">
+  Generated by Vitia Invenire v{{ report.report_id[:8] }} |
+  Report ID: {{ report.report_id }} |
+  {{ report.scan_start.strftime('%Y-%m-%d %H:%M:%S UTC') }}
+</div>
+
+</div>
+</body>
+</html>

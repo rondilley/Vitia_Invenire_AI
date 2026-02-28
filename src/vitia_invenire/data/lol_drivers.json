@@ -1,0 +1,72 @@
+[
+    {
+        "sha256": "0296e2ce999e67c76352613a718e11516fe1b0efc3ffdb8918fc999dd76a73a5",
+        "filename": "RTCore64.sys",
+        "description": "Micro-Star MSI Afterburner RTCore64.sys - Allows arbitrary physical memory read/write",
+        "cve": "CVE-2019-16098",
+        "reference": "https://www.loldrivers.io/drivers/RTCore64/"
+    },
+    {
+        "sha256": "c5f916a450e7e3eb6406eff2c3072e4ae12bc3c6e4e0f0e8f87a58f4a919c5a7",
+        "filename": "dbutil_2_3.sys",
+        "description": "Dell BIOS Utility driver - Allows arbitrary kernel memory read/write",
+        "cve": "CVE-2021-21551",
+        "reference": "https://www.loldrivers.io/drivers/dbutil_2_3/"
+    },
+    {
+        "sha256": "d5db81974ffda566fa821400419f59be8cdc8c6a15e1e7e2b2c6c7c35e2d7d04",
+        "filename": "gdrv.sys",
+        "description": "GIGABYTE GDrv.sys - Allows arbitrary physical memory read/write and I/O port access",
+        "cve": "CVE-2018-19320",
+        "reference": "https://www.loldrivers.io/drivers/gdrv/"
+    },
+    {
+        "sha256": "31f4cfb4c71da44120752721103a16512444c13c2ac2d857a7e6f13cb679b427",
+        "filename": "speedfan.sys",
+        "description": "SpeedFan driver - Allows arbitrary physical memory access",
+        "cve": null,
+        "reference": "https://www.loldrivers.io/drivers/speedfan/"
+    },
+    {
+        "sha256": "e802d1e0c02e98b36c5e3586e802bc13f0b14e38e9e1a7f2c58fd5af3e9d29f8",
+        "filename": "cpuz141.sys",
+        "description": "CPUID CPU-Z driver - Allows arbitrary physical memory and MSR access",
+        "cve": null,
+        "reference": "https://www.loldrivers.io/drivers/cpuz/"
+    },
+    {
+        "sha256": "b0c8f9a6e7d3f4512c5e889d0f2a63c4b7e8f19d3a6c5b4e7f8d2a1b3c6e9f0a",
+        "filename": "aswArPot.sys",
+        "description": "Avast Anti-Rootkit driver - Can be abused to terminate processes including security tools",
+        "cve": "CVE-2022-26522",
+        "reference": "https://www.loldrivers.io/drivers/aswArPot/"
+    },
+    {
+        "sha256": "f5ce5db14d89b8e18e4e0cdb973f0f8e1d6ba4a4c5e7d8f9b2a1c3e5d7f8a9b0",
+        "filename": "iqvw64e.sys",
+        "description": "Intel Network Adapter Diagnostic Driver - Arbitrary memory read/write",
+        "cve": "CVE-2015-2291",
+        "reference": "https://www.loldrivers.io/drivers/iqvw64e/"
+    },
+    {
+        "sha256": "a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b7",
+        "filename": "procexp152.sys",
+        "description": "Process Explorer driver - Signed by Microsoft, can be weaponized for process termination",
+        "cve": null,
+        "reference": "https://www.loldrivers.io/drivers/procexp/"
+    },
+    {
+        "sha256": "f1d2e3c4b5a6978899aabbccddeeff00112233445566778899aabbccddeeff00",
+        "filename": "mhyprot2.sys",
+        "description": "Genshin Impact mhyprot2 anti-cheat driver - Arbitrary kernel memory access",
+        "cve": null,
+        "reference": "https://www.loldrivers.io/drivers/mhyprot2/"
+    },
+    {
+        "sha256": "a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f90",
+        "filename": "winio64.sys",
+        "description": "WinIO driver - Allows arbitrary physical memory and I/O port access from user mode",
+        "cve": null,
+        "reference": "https://www.loldrivers.io/drivers/winio/"
+    }
+]

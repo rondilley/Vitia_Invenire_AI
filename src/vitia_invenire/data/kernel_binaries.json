@@ -1,0 +1,102 @@
+[
+  {
+    "filename": "ntoskrnl.exe",
+    "expected_signer": "Microsoft Windows",
+    "description": "Windows NT kernel executive - core operating system kernel"
+  },
+  {
+    "filename": "hal.dll",
+    "expected_signer": "Microsoft Windows",
+    "description": "Hardware Abstraction Layer - interface between hardware and kernel"
+  },
+  {
+    "filename": "ci.dll",
+    "expected_signer": "Microsoft Windows",
+    "description": "Code Integrity module - enforces driver signing policy"
+  },
+  {
+    "filename": "win32k.sys",
+    "expected_signer": "Microsoft Windows",
+    "description": "Win32 kernel-mode subsystem driver - GUI and window management"
+  },
+  {
+    "filename": "win32kfull.sys",
+    "expected_signer": "Microsoft Windows",
+    "description": "Win32 full kernel-mode subsystem - extended GUI operations"
+  },
+  {
+    "filename": "win32kbase.sys",
+    "expected_signer": "Microsoft Windows",
+    "description": "Win32 base kernel-mode subsystem - foundational GUI layer"
+  },
+  {
+    "filename": "ndis.sys",
+    "expected_signer": "Microsoft Windows",
+    "description": "Network Driver Interface Specification - core networking stack"
+  },
+  {
+    "filename": "tcpip.sys",
+    "expected_signer": "Microsoft Windows",
+    "description": "TCP/IP protocol driver - core network transport layer"
+  },
+  {
+    "filename": "fltMgr.sys",
+    "expected_signer": "Microsoft Windows",
+    "description": "Filter Manager - file system minifilter driver framework"
+  },
+  {
+    "filename": "ntdll.dll",
+    "expected_signer": "Microsoft Windows",
+    "description": "NT Layer DLL - lowest user-mode layer, syscall interface"
+  },
+  {
+    "filename": "kernel32.dll",
+    "expected_signer": "Microsoft Windows",
+    "description": "Windows 32-bit Base API - core process and memory management"
+  },
+  {
+    "filename": "kernelbase.dll",
+    "expected_signer": "Microsoft Windows",
+    "description": "Windows Base API - foundational system operations"
+  },
+  {
+    "filename": "advapi32.dll",
+    "expected_signer": "Microsoft Windows",
+    "description": "Advanced Windows 32 Base API - security and registry functions"
+  },
+  {
+    "filename": "cng.sys",
+    "expected_signer": "Microsoft Windows",
+    "description": "Cryptography Next Generation kernel driver"
+  },
+  {
+    "filename": "ksecdd.sys",
+    "expected_signer": "Microsoft Windows",
+    "description": "Kernel Security Support Provider Interface - authentication"
+  },
+  {
+    "filename": "msrpc.sys",
+    "expected_signer": "Microsoft Windows",
+    "description": "Microsoft Remote Procedure Call kernel driver"
+  },
+  {
+    "filename": "clipsp.sys",
+    "expected_signer": "Microsoft Windows",
+    "description": "Client License System Policy kernel driver"
+  },
+  {
+    "filename": "clfs.sys",
+    "expected_signer": "Microsoft Windows",
+    "description": "Common Log File System driver"
+  },
+  {
+    "filename": "volmgr.sys",
+    "expected_signer": "Microsoft Windows",
+    "description": "Volume Manager driver - disk volume management"
+  },
+  {
+    "filename": "storport.sys",
+    "expected_signer": "Microsoft Windows",
+    "description": "Microsoft Storage Port Driver"
+  }
+]

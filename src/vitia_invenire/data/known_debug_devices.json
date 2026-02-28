@@ -1,0 +1,177 @@
+[
+  {
+    "vid": "0403",
+    "pid": "6001",
+    "name": "FTDI FT232R",
+    "description": "Common USB-to-serial adapter frequently used as a JTAG debugger or serial console for embedded device access",
+    "severity": "MEDIUM"
+  },
+  {
+    "vid": "0403",
+    "pid": "6010",
+    "name": "FTDI FT2232",
+    "description": "Dual-channel USB-to-serial/JTAG adapter used for hardware debugging, SPI/I2C sniffing, and firmware extraction",
+    "severity": "MEDIUM"
+  },
+  {
+    "vid": "0403",
+    "pid": "6014",
+    "name": "FTDI FT232H",
+    "description": "High-speed USB-to-serial/JTAG/SPI/I2C adapter commonly used for hardware hacking and firmware analysis",
+    "severity": "MEDIUM"
+  },
+  {
+    "vid": "0403",
+    "pid": "6011",
+    "name": "FTDI FT4232H",
+    "description": "Quad-channel USB-to-serial/JTAG adapter used for multi-target hardware debugging scenarios",
+    "severity": "MEDIUM"
+  },
+  {
+    "vid": "1D50",
+    "pid": "606F",
+    "name": "Hak5 USB Rubber Ducky",
+    "description": "Keystroke injection attack platform that emulates a keyboard to execute pre-programmed payloads",
+    "severity": "CRITICAL"
+  },
+  {
+    "vid": "1D50",
+    "pid": "6089",
+    "name": "Hak5 Bash Bunny",
+    "description": "Multi-function USB attack platform capable of keystroke injection, network attacks, and storage exfiltration",
+    "severity": "CRITICAL"
+  },
+  {
+    "vid": "2B3E",
+    "pid": "ACE1",
+    "name": "Hak5 Packet Squirrel",
+    "description": "Inline network implant for packet capture, man-in-the-middle attacks, and DNS spoofing",
+    "severity": "CRITICAL"
+  },
+  {
+    "vid": "1A86",
+    "pid": "7523",
+    "name": "CH340 USB-to-Serial",
+    "description": "Low-cost USB-to-serial adapter commonly found on debug boards and used for embedded device console access",
+    "severity": "LOW"
+  },
+  {
+    "vid": "10C4",
+    "pid": "EA60",
+    "name": "Silicon Labs CP210x",
+    "description": "USB-to-UART bridge controller used in debug adapters and embedded development boards",
+    "severity": "LOW"
+  },
+  {
+    "vid": "04D8",
+    "pid": "0033",
+    "name": "Microchip PICkit",
+    "description": "Microchip JTAG/SWD programmer and debugger for PIC and ARM microcontrollers",
+    "severity": "MEDIUM"
+  },
+  {
+    "vid": "2341",
+    "pid": "0043",
+    "name": "Arduino Uno",
+    "description": "Arduino development board that can be reprogrammed as a USB HID attack device (BadUSB)",
+    "severity": "LOW"
+  },
+  {
+    "vid": "2341",
+    "pid": "8036",
+    "name": "Arduino Leonardo",
+    "description": "Arduino board with native USB HID capability, commonly used for BadUSB keystroke injection attacks",
+    "severity": "MEDIUM"
+  },
+  {
+    "vid": "16C0",
+    "pid": "0486",
+    "name": "Teensy (HID)",
+    "description": "Teensy microcontroller in HID mode, commonly used for USB keystroke injection attacks",
+    "severity": "HIGH"
+  },
+  {
+    "vid": "16C0",
+    "pid": "0483",
+    "name": "Teensy (Serial)",
+    "description": "Teensy microcontroller in serial mode, used for hardware debugging and USB attack development",
+    "severity": "MEDIUM"
+  },
+  {
+    "vid": "1366",
+    "pid": "0101",
+    "name": "Segger J-Link",
+    "description": "Professional JTAG/SWD debug probe for ARM processors, used for firmware extraction and analysis",
+    "severity": "MEDIUM"
+  },
+  {
+    "vid": "1366",
+    "pid": "0105",
+    "name": "Segger J-Link Plus",
+    "description": "High-end JTAG/SWD debug probe with enhanced trace capabilities for ARM debugging",
+    "severity": "MEDIUM"
+  },
+  {
+    "vid": "0D28",
+    "pid": "0204",
+    "name": "ARM CMSIS-DAP",
+    "description": "ARM debug access port interface used for SWD/JTAG debugging of ARM Cortex processors",
+    "severity": "MEDIUM"
+  },
+  {
+    "vid": "1CBE",
+    "pid": "00FD",
+    "name": "TI Stellaris ICDI",
+    "description": "Texas Instruments In-Circuit Debug Interface for Stellaris and Tiva microcontrollers",
+    "severity": "LOW"
+  },
+  {
+    "vid": "2B3E",
+    "pid": "C123",
+    "name": "Hak5 LAN Turtle",
+    "description": "Covert network implant disguised as a USB Ethernet adapter for persistent network access and man-in-the-middle attacks",
+    "severity": "CRITICAL"
+  },
+  {
+    "vid": "2B3E",
+    "pid": "1337",
+    "name": "Hak5 WiFi Pineapple",
+    "description": "Rogue wireless access point platform for WiFi auditing, credential harvesting, and man-in-the-middle attacks",
+    "severity": "CRITICAL"
+  },
+  {
+    "vid": "1D50",
+    "pid": "60FC",
+    "name": "GreatFET One",
+    "description": "Open-source hardware security research tool for USB protocol analysis, JTAG, and SPI flash dumping",
+    "severity": "HIGH"
+  },
+  {
+    "vid": "1D50",
+    "pid": "6108",
+    "name": "Facedancer (GreatFET)",
+    "description": "USB device emulator used for USB fuzzing, protocol analysis, and BadUSB research",
+    "severity": "HIGH"
+  },
+  {
+    "vid": "1FC9",
+    "pid": "0083",
+    "name": "NXP LPC-Link",
+    "description": "NXP debug probe for LPC ARM microcontrollers, used for JTAG and SWD firmware access",
+    "severity": "LOW"
+  },
+  {
+    "vid": "0483",
+    "pid": "3748",
+    "name": "STMicroelectronics ST-LINK/V2",
+    "description": "STM32 JTAG/SWD debug probe for ARM Cortex microcontrollers, used for firmware extraction",
+    "severity": "MEDIUM"
+  },
+  {
+    "vid": "0483",
+    "pid": "374B",
+    "name": "STMicroelectronics ST-LINK/V2-1",
+    "description": "Integrated STM32 debug probe found on Nucleo boards, used for SWD debugging and programming",
+    "severity": "MEDIUM"
+  }
+]
