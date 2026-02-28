@@ -226,15 +226,15 @@ class FileIntegrityCheck(BaseCheck):
                 f"if (Test-Path '{file_path}') {{ "
                 f"$hash = Get-FileHash -Path '{file_path}' -Algorithm SHA256 -ErrorAction SilentlyContinue; "
                 f"$sig = Get-AuthenticodeSignature -FilePath '{file_path}' -ErrorAction SilentlyContinue; "
-                "@{{ "
+                "@{ "
                 "Exists=$true; "
-                "SHA256=if($hash){{$hash.Hash}}else{{'ERROR'}}; "
-                "Status=if($sig){{$sig.Status.ToString()}}else{{'Unknown'}}; "
-                "Signer=if($sig -and $sig.SignerCertificate){{$sig.SignerCertificate.Subject}}else{{''}}; "
-                "Issuer=if($sig -and $sig.SignerCertificate){{$sig.SignerCertificate.Issuer}}else{{''}} "
-                "}} }} else {{ "
-                "@{{ Exists=$false; SHA256=''; Status='NotFound'; Signer=''; Issuer='' }} "
-                "}}",
+                "SHA256=if($hash){$hash.Hash}else{'ERROR'}; "
+                "Status=if($sig){$sig.Status.ToString()}else{'Unknown'}; "
+                "Signer=if($sig -and $sig.SignerCertificate){$sig.SignerCertificate.Subject}else{''}; "
+                "Issuer=if($sig -and $sig.SignerCertificate){$sig.SignerCertificate.Issuer}else{''} "
+                "} } else { "
+                "@{ Exists=$false; SHA256=''; Status='NotFound'; Signer=''; Issuer='' } "
+                "}",
                 timeout=30,
                 as_json=True,
             )

@@ -41,6 +41,10 @@ vitia-invenire = "vitia_invenire.cli:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+"vitia_invenire.data" = ["*.json", "*.yaml"]
+"vitia_invenire.templates" = ["*.j2"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-v --tb=short"

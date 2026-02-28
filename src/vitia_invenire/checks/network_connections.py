@@ -16,41 +16,67 @@ from vitia_invenire.models import Category, Finding, Severity
 
 # Processes that are expected to make external connections
 _EXPECTED_NETWORK_PROCESSES: set[str] = {
+    # Windows core
     "svchost.exe",
     "system",
     "lsass.exe",
     "services.exe",
+    "explorer.exe",
+    "sihost.exe",
+    "taskhostw.exe",
+    "dllhost.exe",
+    "ctfmon.exe",
+    "smartscreen.exe",
+    "wininit.exe",
+    "spoolsv.exe",
+    # Windows Defender / security
+    "msmpeng.exe",
+    "mpcmdrun.exe",
+    "mpdefendercoreservice.exe",
+    "securityhealthservice.exe",
+    "securityhealthsystray.exe",
+    # Windows shell / UWP
+    "runtimebroker.exe",
+    "backgroundtaskhost.exe",
+    "applicationframehost.exe",
+    "startmenuexperiencehost.exe",
+    "searchhost.exe",
+    "searchui.exe",
+    "widgets.exe",
+    "widgetservice.exe",
+    "phoneexperiencehost.exe",
+    "settingssynchost.exe",
+    "windowspackagemanagertaskhost.exe",
+    "gamingservices.exe",
+    "winstore.app",
+    # Windows Update
+    "wuauclt.exe",
+    "musnotification.exe",
+    "usoclient.exe",
+    # Browsers
     "msedge.exe",
+    "msedgewebview2.exe",
+    "microsoftedge.exe",
+    "microsoftedgecp.exe",
     "chrome.exe",
     "firefox.exe",
     "brave.exe",
     "opera.exe",
     "iexplore.exe",
-    "microsoftedge.exe",
-    "microsoftedgecp.exe",
+    # Microsoft apps
     "onedrive.exe",
+    "onedrivestandaloneupdater.exe",
     "outlook.exe",
     "teams.exe",
+    # Third-party common
     "slack.exe",
     "spotify.exe",
     "steam.exe",
     "discord.exe",
-    "searchhost.exe",
-    "searchui.exe",
-    "runtimebroker.exe",
-    "backgroundtaskhost.exe",
-    "msedgewebview2.exe",
-    "windowspackagemanagertaskhost.exe",
-    "wuauclt.exe",
-    "windows update",
-    "microsoftupdate",
-    "mpcmdrun.exe",
     "dropbox.exe",
     "googledrivesync.exe",
     "code.exe",
     "devenv.exe",
-    "winstore.app",
-    "settingssynchost.exe",
 }
 
 
@@ -232,19 +258,22 @@ class NetworkConnectionsCheck(BaseCheck):
             if state == "Established" and remote_addr not in ("127.0.0.1", "::1", "0.0.0.0"):
                 proc_lower = proc_name.lower()
                 if proc_lower not in _EXPECTED_NETWORK_PROCESSES and proc_lower != "unknown":
-                    # Check if it looks like an internal address
+                    # Check if it looks like an internal/private address
                     is_internal = (
                         remote_addr.startswith("10.") or
                         remote_addr.startswith("192.168.") or
-                        remote_addr.startswith("172.16.") or
-                        remote_addr.startswith("172.17.") or
-                        remote_addr.startswith("172.18.") or
-                        remote_addr.startswith("172.19.") or
-                        remote_addr.startswith("172.2") or
-                        remote_addr.startswith("172.3") or
                         remote_addr.startswith("fe80:") or
                         remote_addr.startswith("fd")
                     )
+                    if not is_internal and remote_addr.startswith("172."):
+                        # RFC1918: 172.16.0.0 - 172.31.255.255
+                        parts = remote_addr.split(".")
+                        if len(parts) >= 2:
+                            try:
+                                second_octet = int(parts[1])
+                                is_internal = 16 <= second_octet <= 31
+                            except ValueError:
+                                pass
 
                     if not is_internal:
                         unexpected_process_hits += 1

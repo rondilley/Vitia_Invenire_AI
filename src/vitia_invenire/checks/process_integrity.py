@@ -29,12 +29,13 @@ _SUSPICIOUS_DIRS = [
     "$recycle.bin",
 ]
 
-# Legitimate system directories that should not trigger alerts even if
-# they match a substring above (e.g., AppData is used by some legit services)
-_LEGITIMATE_APPDATA_PATHS = [
+# Legitimate paths that should not trigger alerts even if they
+# match a suspicious directory pattern above.
+_LEGITIMATE_PATHS = [
     "\\microsoft\\",
     "\\windows\\",
     "\\windowsapps\\",
+    "\\packages\\",
 ]
 
 # Read buffer size for hashing
@@ -65,11 +66,12 @@ def _is_suspicious_path(exe_path: str) -> tuple[bool, str]:
 
     for pattern in _SUSPICIOUS_DIRS:
         if pattern in path_lower:
-            # Check if it might be a legitimate AppData usage
-            if "appdata" in pattern:
-                for legit in _LEGITIMATE_APPDATA_PATHS:
-                    if legit in path_lower:
-                        return False, ""
+            # Check if the path is under a known-legitimate subdirectory.
+            # Many standard Windows services and apps run from AppData
+            # or ProgramData under Microsoft/ or Windows/ subdirectories.
+            for legit in _LEGITIMATE_PATHS:
+                if legit in path_lower:
+                    return False, ""
             return True, f"Executable running from suspicious location matching '{pattern}'"
 
     return False, ""
@@ -132,8 +134,21 @@ class ProcessIntegrityCheck(BaseCheck):
 
             # Check for processes with no executable path
             if not exe_path:
-                # System Idle Process (PID 0) and System (PID 4) legitimately have no path
-                if pid not in (0, 4) and name.lower() not in ("system idle process", "system", "registry", "secure system", "memory compression"):
+                # Many kernel and protected processes legitimately have no
+                # file path visible to non-elevated processes. Low PIDs
+                # (typically under 200) are almost always kernel threads.
+                name_lower = name.lower()
+                is_known_system = (
+                    pid in (0, 4)
+                    or pid < 200
+                    or name_lower in (
+                        "system idle process", "system", "registry",
+                        "secure system", "memory compression", "idle",
+                        "smss", "csrss", "wininit", "services",
+                        "lsaiso", "svchost", "fontdrvhost",
+                    )
+                )
+                if not is_known_system:
                     entry["reason"] = "No executable path available"
                     no_path_processes.append(entry)
                 all_process_summary.append(entry)

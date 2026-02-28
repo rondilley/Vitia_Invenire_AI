@@ -47,6 +47,16 @@ _SUSPICIOUS_DIRS: list[str] = [
     "\\PROGRAMDATA\\",
 ]
 
+# Legitimate subdirectory paths that override _SUSPICIOUS_DIRS matches.
+# Many standard Windows applications and first-party Microsoft apps
+# legitimately auto-start from AppData or ProgramData.
+_LEGITIMATE_SUBPATHS: list[str] = [
+    "\\MICROSOFT\\",
+    "\\WINDOWS\\",
+    "\\WINDOWSAPPS\\",
+    "\\PACKAGES\\",
+]
+
 # LOLBins (Living-off-the-Land Binaries) commonly used for persistence
 _LOLBINS: dict[str, str] = {
     "powershell": "PowerShell interpreter",
@@ -121,8 +131,11 @@ class RegistryAutostartCheck(BaseCheck):
                 # Check for suspicious directories
                 for sus_dir in _SUSPICIOUS_DIRS:
                     if sus_dir in upper_data:
-                        is_suspicious = True
-                        reasons.append(f"Path contains suspicious directory: {sus_dir.strip(chr(92))}")
+                        # Check if path is under a known-legitimate subdirectory
+                        is_legit = any(lp in upper_data for lp in _LEGITIMATE_SUBPATHS)
+                        if not is_legit:
+                            is_suspicious = True
+                            reasons.append(f"Path contains suspicious directory: {sus_dir.strip(chr(92))}")
                         break
 
                 # Check for LOLBins

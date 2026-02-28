@@ -262,9 +262,11 @@ class EfiPartitionCheck(BaseCheck):
             # Check for suspicious file types that should not be in ESP
             if not is_dir and extension in (".exe", ".dll", ".sys", ".bat", ".cmd",
                                              ".ps1", ".vbs", ".js", ".hta"):
-                # EFI files are .efi, not .exe/.dll
-                if extension not in (".efi",):
-                    suspicious_files.append(full_name)
+                # DLLs in EFI\Microsoft\Boot\ are legitimate Windows components
+                # (e.g., kd_02_*.dll kernel debugger transport DLLs, ci.dll, etc.)
+                if extension == ".dll" and relative_path.startswith("efi\\microsoft\\boot\\"):
+                    continue
+                suspicious_files.append(full_name)
 
             # Check for files outside the EFI directory
             if not is_dir and not relative_path.startswith("efi"):

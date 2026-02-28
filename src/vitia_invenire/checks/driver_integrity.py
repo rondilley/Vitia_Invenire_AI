@@ -96,14 +96,14 @@ class DriverIntegrityCheck(BaseCheck):
             sig_cmd = (
                 f"@({paths_ps}) | ForEach-Object {{ "
                 "$path = $_; "
-                "if (Test-Path $path) {{ "
+                "if (Test-Path $path) { "
                 "$sig = Get-AuthenticodeSignature -FilePath $path -ErrorAction SilentlyContinue; "
-                "@{{ Path=$path; Status=if($sig){{$sig.Status.ToString()}}else{{'NotFound'}}; "
-                "Signer=if($sig -and $sig.SignerCertificate){{$sig.SignerCertificate.Subject}}else{{''}}; "
-                "TimeStamperCert=if($sig -and $sig.TimeStamperCertificate){{$sig.TimeStamperCertificate.Subject}}else{{''}} }} "
-                "}} else {{ "
-                "@{{ Path=$path; Status='FileNotFound'; Signer=''; TimeStamperCert='' }} "
-                "}} }}"
+                "@{ Path=$path; Status=if($sig){$sig.Status.ToString()}else{'NotFound'}; "
+                "Signer=if($sig -and $sig.SignerCertificate){$sig.SignerCertificate.Subject}else{''}; "
+                "TimeStamperCert=if($sig -and $sig.TimeStamperCertificate){$sig.TimeStamperCertificate.Subject}else{''} } "
+                "} else { "
+                "@{ Path=$path; Status='FileNotFound'; Signer=''; TimeStamperCert='' } "
+                "} }"
             )
 
             sig_result = run_ps(sig_cmd, timeout=120, as_json=True)

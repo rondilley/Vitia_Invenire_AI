@@ -12,15 +12,50 @@ from vitia_invenire.collectors import registry, wmi_collector
 from vitia_invenire.collectors.powershell import run_ps
 from vitia_invenire.models import Category, Finding, Severity
 
-# Processes that are expected to listen on network ports
+# Processes that are expected to listen on network ports.
+# Includes both with and without .exe because Get-Process returns
+# names without the extension.
 _EXPECTED_LISTENERS: set[str] = {
-    "system", "svchost.exe", "lsass.exe", "services.exe",
-    "wininit.exe", "dns.exe", "w3svc.exe", "httpd.exe",
-    "spoolsv.exe", "searchindexer.exe", "msdtc.exe",
-    "sqlservr.exe", "mysqld.exe", "postgres.exe",
-    "iisexpress.exe", "dfsrs.exe", "dfssvc.exe",
-    "smss.exe", "csrss.exe", "winlogon.exe",
+    "system", "idle",
+    "svchost", "svchost.exe",
+    "lsass", "lsass.exe",
+    "services", "services.exe",
+    "wininit", "wininit.exe",
+    "spoolsv", "spoolsv.exe",
+    "searchindexer", "searchindexer.exe",
+    "msdtc", "msdtc.exe",
+    "smss", "smss.exe",
+    "csrss", "csrss.exe",
+    "winlogon", "winlogon.exe",
+    "lsm", "lsm.exe",
+    "dashost", "dashost.exe",
+    "dns", "dns.exe",
+    "w3svc", "w3svc.exe",
+    "httpd", "httpd.exe",
+    "sqlservr", "sqlservr.exe",
+    "mysqld", "mysqld.exe",
+    "postgres", "postgres.exe",
+    "iisexpress", "iisexpress.exe",
+    "dfsrs", "dfsrs.exe",
+    "dfssvc", "dfssvc.exe",
+    # Windows Defender
+    "msmpeng", "msmpeng.exe",
+    "mpdefendercoreservice", "mpdefendercoreservice.exe",
 }
+
+# Standard Windows TCP ports that are expected to have listeners.
+# These are normal on any Windows 11 system.
+_EXPECTED_PORTS: set[int] = {
+    135,   # RPC Endpoint Mapper
+    445,   # SMB
+    5040,  # Windows Delivery Optimization
+    5357,  # Web Services on Devices (WSDAPI)
+    7680,  # Windows Delivery Optimization (WUDO)
+}
+
+# Windows RPC dynamic port range -- svchost/services/lsass listeners here are normal
+_RPC_DYNAMIC_PORT_MIN = 49152
+_RPC_DYNAMIC_PORT_MAX = 65535
 
 
 class NetworkProcessAuditCheck(BaseCheck):
@@ -111,18 +146,36 @@ class NetworkProcessAuditCheck(BaseCheck):
                 port_int = 0
 
             proc_lower = proc_name.lower()
-            if proc_lower not in _EXPECTED_LISTENERS and proc_lower != "unknown":
-                unexpected_count += 1
 
-                # Determine if this is a high-risk listener
-                # External-facing listeners on all interfaces (0.0.0.0 or ::)
-                is_all_interfaces = local_addr in ("0.0.0.0", "::", "[::]")
+            # Skip processes in the expected listeners set
+            if proc_lower in _EXPECTED_LISTENERS or proc_lower == "unknown":
+                continue
 
-                severity = Severity.MEDIUM
-                if is_all_interfaces and port_int < 1024:
-                    severity = Severity.HIGH
+            # Skip expected Windows service ports regardless of process
+            if port_int in _EXPECTED_PORTS:
+                continue
 
-                findings.append(Finding(
+            # Skip expected processes on RPC dynamic ports
+            if _RPC_DYNAMIC_PORT_MIN <= port_int <= _RPC_DYNAMIC_PORT_MAX:
+                # Standard Windows services on ephemeral/RPC ports are normal
+                proc_base = proc_lower.removesuffix(".exe")
+                if proc_base in ("svchost", "services", "lsass", "wininit",
+                                 "spoolsv", "msdtc", "dns", "smss", "csrss",
+                                 "winlogon", "lsm", "dashost", "msmpeng",
+                                 "mpdefendercoreservice"):
+                    continue
+
+            unexpected_count += 1
+
+            # Determine if this is a high-risk listener
+            # External-facing listeners on all interfaces (0.0.0.0 or ::)
+            is_all_interfaces = local_addr in ("0.0.0.0", "::", "[::]")
+
+            severity = Severity.MEDIUM
+            if is_all_interfaces and port_int < 1024:
+                severity = Severity.HIGH
+
+            findings.append(Finding(
                     check_id=self.CHECK_ID,
                     title=f"Unexpected listener: {proc_name} on port {port_int}",
                     description=(

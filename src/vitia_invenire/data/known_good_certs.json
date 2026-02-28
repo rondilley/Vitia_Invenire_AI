@@ -123,5 +123,80 @@
     "thumbprint": "2E14DAEC28F0FA1E8E389A4EABEB26C00AD383C3",
     "subject": "CN=Certum Trusted Network CA, OU=Certum Certification Authority, O=Unizeto Technologies S.A., C=PL",
     "issuer": "CN=Certum Trusted Network CA, OU=Certum Certification Authority, O=Unizeto Technologies S.A., C=PL"
+  },
+  {
+    "thumbprint": "CDD4EEAE6000AC7F40C3802C171E30148030C072",
+    "subject": "CN=Microsoft Root Certificate Authority, DC=microsoft, DC=com",
+    "issuer": "CN=Microsoft Root Certificate Authority, DC=microsoft, DC=com"
+  },
+  {
+    "thumbprint": "7F88CD7223F3C813818C994614A89C99FA3B5247",
+    "subject": "CN=Microsoft Authenticode(tm) Root Authority, O=MSFT, C=US",
+    "issuer": "CN=Microsoft Authenticode(tm) Root Authority, O=MSFT, C=US"
+  },
+  {
+    "thumbprint": "73A5E64A3BFF8316FF0EDCCC618A906E4EAE4D74",
+    "subject": "CN=Microsoft RSA Root Certificate Authority 2017, O=Microsoft Corporation, C=US",
+    "issuer": "CN=Microsoft RSA Root Certificate Authority 2017, O=Microsoft Corporation, C=US"
+  },
+  {
+    "thumbprint": "06F1AA330B927B753A40E68CDF22E34BCBEF3352",
+    "subject": "CN=Microsoft ECC Product Root Certificate Authority 2018, O=Microsoft Corporation, C=US",
+    "issuer": "CN=Microsoft ECC Product Root Certificate Authority 2018, O=Microsoft Corporation, C=US"
+  },
+  {
+    "thumbprint": "31F9FC8BA3805986B721EA7295C65B3A44534274",
+    "subject": "CN=Microsoft ECC TS Root Certificate Authority 2018, O=Microsoft Corporation, C=US",
+    "issuer": "CN=Microsoft ECC TS Root Certificate Authority 2018, O=Microsoft Corporation, C=US"
+  },
+  {
+    "thumbprint": "0119E81BE9A14CD8E22F40AC118C687ECBA3F4D8",
+    "subject": "CN=Microsoft Time Stamp Root Certificate Authority 2014, O=Microsoft Corporation, C=US",
+    "issuer": "CN=Microsoft Time Stamp Root Certificate Authority 2014, O=Microsoft Corporation, C=US"
+  },
+  {
+    "thumbprint": "F40042E2E5F7E8EF8189FED15519AECE42C3BFA2",
+    "subject": "CN=Microsoft Identity Verification Root Certificate Authority 2020, O=Microsoft Corporation, C=US",
+    "issuer": "CN=Microsoft Identity Verification Root Certificate Authority 2020, O=Microsoft Corporation, C=US"
+  },
+  {
+    "thumbprint": "245C97DF7514E7CF2DF8BE72AE957B9E04741E85",
+    "subject": "OU=Copyright (c) 1997 Microsoft Corp., OU=Microsoft Time Stamping Service Root, OU=Microsoft Corporation, O=Microsoft Trust Network",
+    "issuer": "OU=Copyright (c) 1997 Microsoft Corp., OU=Microsoft Time Stamping Service Root, OU=Microsoft Corporation, O=Microsoft Trust Network"
+  },
+  {
+    "thumbprint": "92B46C76E13054E104F230517E6E504D43AB10B5",
+    "subject": "CN=Symantec Enterprise Mobile Root for Microsoft, O=Symantec Corporation, C=US",
+    "issuer": "CN=Symantec Enterprise Mobile Root for Microsoft, O=Symantec Corporation, C=US"
+  },
+  {
+    "thumbprint": "BE36A4562FB2EE05DBB3D32323ADF445084ED656",
+    "subject": "CN=Thawte Timestamping CA, OU=Thawte Certification, O=Thawte, L=Durbanville, S=Western Cape, C=ZA",
+    "issuer": "CN=Thawte Timestamping CA, OU=Thawte Certification, O=Thawte, L=Durbanville, S=Western Cape, C=ZA"
+  },
+  {
+    "thumbprint": "18F7C1FCC3090203FD5BAA2F861A754976C8DD25",
+    "subject": "OU=VeriSign Time Stamping Service Root, OU=VeriSign, Inc., O=VeriSign Trust Network",
+    "issuer": "OU=VeriSign Time Stamping Service Root, OU=VeriSign, Inc., O=VeriSign Trust Network"
+  },
+  {
+    "thumbprint": "742C3192E607E424EB4549542BE1BBC53E6174E2",
+    "subject": "OU=Class 3 Public Primary Certification Authority, O=VeriSign, Inc., C=US",
+    "issuer": "OU=Class 3 Public Primary Certification Authority, O=VeriSign, Inc., C=US"
+  },
+  {
+    "thumbprint": "925A8F8D2C6D04E0665F596AFF22D863E8256F3F",
+    "subject": "CN=Starfield Services Root Certificate Authority - G2, O=Starfield Technologies, Inc., L=Scottsdale, S=Arizona, C=US",
+    "issuer": "CN=Starfield Services Root Certificate Authority - G2, O=Starfield Technologies, Inc., L=Scottsdale, S=Arizona, C=US"
+  },
+  {
+    "thumbprint": "02FAF3E291435468607857694DF5E45B68851868",
+    "subject": "CN=AddTrust External CA Root, OU=AddTrust External TTP Network, O=AddTrust AB, C=SE",
+    "issuer": "CN=AddTrust External CA Root, OU=AddTrust External TTP Network, O=AddTrust AB, C=SE"
+  },
+  {
+    "thumbprint": "D1CBCA5DB2D52A7F693B674DE5F05A1D0C957DF0",
+    "subject": "CN=USERTrust ECC Certification Authority, O=The USERTRUST Network, L=Jersey City, S=New Jersey, C=US",
+    "issuer": "CN=USERTrust ECC Certification Authority, O=The USERTRUST Network, L=Jersey City, S=New Jersey, C=US"
   }
 ]
