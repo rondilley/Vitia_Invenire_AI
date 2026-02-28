@@ -1,0 +1,214 @@
+{
+  "description": "Known vulnerable software versions for common applications",
+  "last_updated": "2025-12-01",
+  "software": [
+    {
+      "name_pattern": "Google Chrome",
+      "vendor_pattern": "Google",
+      "max_safe_version": "121.0.6167.160",
+      "cve": "CVE-2024-0519",
+      "severity": "CRITICAL",
+      "description": "Chrome V8 out-of-bounds memory access allowing remote code execution - actively exploited"
+    },
+    {
+      "name_pattern": "Google Chrome",
+      "vendor_pattern": "Google",
+      "max_safe_version": "124.0.6367.201",
+      "cve": "CVE-2024-4671",
+      "severity": "CRITICAL",
+      "description": "Chrome Visuals use-after-free allowing remote code execution - actively exploited"
+    },
+    {
+      "name_pattern": "Google Chrome",
+      "vendor_pattern": "Google",
+      "max_safe_version": "125.0.6422.112",
+      "cve": "CVE-2024-5274",
+      "severity": "CRITICAL",
+      "description": "Chrome V8 type confusion allowing arbitrary code execution - actively exploited"
+    },
+    {
+      "name_pattern": "Mozilla Firefox",
+      "vendor_pattern": "Mozilla",
+      "max_safe_version": "124.0.1",
+      "cve": "CVE-2024-29943",
+      "severity": "CRITICAL",
+      "description": "Firefox arbitrary code execution via range analysis bypass in JIT compiler"
+    },
+    {
+      "name_pattern": "Mozilla Firefox",
+      "vendor_pattern": "Mozilla",
+      "max_safe_version": "131.0.2",
+      "cve": "CVE-2024-9680",
+      "severity": "CRITICAL",
+      "description": "Firefox Animation timelines use-after-free exploited in the wild by RomCom threat actor"
+    },
+    {
+      "name_pattern": "Microsoft Edge",
+      "vendor_pattern": "Microsoft",
+      "max_safe_version": "121.0.2277.128",
+      "cve": "CVE-2024-0519",
+      "severity": "CRITICAL",
+      "description": "Chromium V8 out-of-bounds memory access affecting Edge - actively exploited"
+    },
+    {
+      "name_pattern": "Adobe Acrobat Reader",
+      "vendor_pattern": "Adobe",
+      "max_safe_version": "24.002.20736",
+      "cve": "CVE-2024-41869",
+      "severity": "CRITICAL",
+      "description": "Adobe Acrobat Reader use-after-free allowing arbitrary code execution via crafted PDF"
+    },
+    {
+      "name_pattern": "Adobe Acrobat",
+      "vendor_pattern": "Adobe",
+      "max_safe_version": "24.002.20736",
+      "cve": "CVE-2024-41869",
+      "severity": "CRITICAL",
+      "description": "Adobe Acrobat use-after-free allowing arbitrary code execution via crafted PDF"
+    },
+    {
+      "name_pattern": "Java",
+      "vendor_pattern": "Oracle",
+      "max_safe_version": "8.0.4010.10",
+      "cve": "CVE-2024-20918",
+      "severity": "HIGH",
+      "description": "Oracle Java SE Hotspot VM array access vulnerability allowing sandbox escape"
+    },
+    {
+      "name_pattern": "Java(TM) SE Development Kit",
+      "vendor_pattern": "Oracle",
+      "max_safe_version": "21.0.2",
+      "cve": "CVE-2024-20918",
+      "severity": "HIGH",
+      "description": "Oracle JDK Hotspot VM array access vulnerability allowing sandbox escape"
+    },
+    {
+      "name_pattern": "7-Zip",
+      "vendor_pattern": "Igor Pavlov",
+      "max_safe_version": "24.08",
+      "cve": "CVE-2024-11477",
+      "severity": "HIGH",
+      "description": "7-Zip Zstandard decompression integer underflow allowing remote code execution"
+    },
+    {
+      "name_pattern": "WinRAR",
+      "vendor_pattern": "Alexander L. Roshal",
+      "max_safe_version": "6.24",
+      "cve": "CVE-2023-38831",
+      "severity": "CRITICAL",
+      "description": "WinRAR arbitrary code execution via crafted ZIP archives - widely exploited by APT groups"
+    },
+    {
+      "name_pattern": "PuTTY",
+      "vendor_pattern": "Simon Tatham",
+      "max_safe_version": "0.80",
+      "cve": "CVE-2024-31497",
+      "severity": "CRITICAL",
+      "description": "PuTTY ECDSA P-521 nonce bias allowing full private key recovery from 60 signatures"
+    },
+    {
+      "name_pattern": "Notepad++",
+      "vendor_pattern": "Notepad++",
+      "max_safe_version": "8.6.0",
+      "cve": "CVE-2023-40031",
+      "severity": "HIGH",
+      "description": "Notepad++ buffer overflow in UTF8-to-UTF16 conversion allowing code execution"
+    },
+    {
+      "name_pattern": "VLC media player",
+      "vendor_pattern": "VideoLAN",
+      "max_safe_version": "3.0.20",
+      "cve": "CVE-2024-46461",
+      "severity": "HIGH",
+      "description": "VLC integer overflow in MMS module allowing potential code execution via crafted stream"
+    },
+    {
+      "name_pattern": "Zoom",
+      "vendor_pattern": "Zoom",
+      "max_safe_version": "5.17.5",
+      "cve": "CVE-2024-24691",
+      "severity": "CRITICAL",
+      "description": "Zoom improper input validation allowing privilege escalation on Windows"
+    },
+    {
+      "name_pattern": "Python",
+      "vendor_pattern": "Python Software Foundation",
+      "max_safe_version": "3.12.3",
+      "cve": "CVE-2024-0450",
+      "severity": "HIGH",
+      "description": "Python zipfile module quoted-overlap zipbomb denial of service bypassing protections"
+    },
+    {
+      "name_pattern": "Node.js",
+      "vendor_pattern": "Node.js",
+      "max_safe_version": "20.11.0",
+      "cve": "CVE-2024-21892",
+      "severity": "HIGH",
+      "description": "Node.js code injection via environment variable manipulation on Windows"
+    },
+    {
+      "name_pattern": "Microsoft .NET Runtime",
+      "vendor_pattern": "Microsoft",
+      "max_safe_version": "8.0.1",
+      "cve": "CVE-2024-21319",
+      "severity": "HIGH",
+      "description": ".NET Runtime denial of service via crafted X.509 certificate chain validation"
+    },
+    {
+      "name_pattern": "Microsoft .NET Framework",
+      "vendor_pattern": "Microsoft",
+      "max_safe_version": "4.8.1",
+      "cve": "CVE-2024-21312",
+      "severity": "HIGH",
+      "description": ".NET Framework denial of service via crafted HTTP request handling"
+    },
+    {
+      "name_pattern": "WinSCP",
+      "vendor_pattern": "Martin Prikryl",
+      "max_safe_version": "6.3.2",
+      "cve": "CVE-2024-31497",
+      "severity": "CRITICAL",
+      "description": "WinSCP bundled PuTTY ECDSA nonce bias allowing private key recovery"
+    },
+    {
+      "name_pattern": "FileZilla",
+      "vendor_pattern": "FileZilla",
+      "max_safe_version": "3.66.5",
+      "cve": "CVE-2024-31497",
+      "severity": "CRITICAL",
+      "description": "FileZilla bundled PuTTY ECDSA nonce bias allowing private key recovery"
+    },
+    {
+      "name_pattern": "Git",
+      "vendor_pattern": "The Git Development Community",
+      "max_safe_version": "2.44.0",
+      "cve": "CVE-2024-24577",
+      "severity": "CRITICAL",
+      "description": "libgit2 heap corruption allowing arbitrary code execution via crafted repositories"
+    },
+    {
+      "name_pattern": "OpenVPN",
+      "vendor_pattern": "OpenVPN",
+      "max_safe_version": "2.6.9",
+      "cve": "CVE-2024-27459",
+      "severity": "HIGH",
+      "description": "OpenVPN stack overflow allowing local privilege escalation on Windows via named pipe"
+    },
+    {
+      "name_pattern": "curl",
+      "vendor_pattern": "curl",
+      "max_safe_version": "8.5.0",
+      "cve": "CVE-2024-2398",
+      "severity": "HIGH",
+      "description": "curl HTTP/2 push headers memory leak allowing denial of service"
+    },
+    {
+      "name_pattern": "KeePass",
+      "vendor_pattern": "Dominik Reichl",
+      "max_safe_version": "2.54",
+      "cve": "CVE-2023-32784",
+      "severity": "HIGH",
+      "description": "KeePass master password extraction from process memory dump"
+    }
+  ]
+}

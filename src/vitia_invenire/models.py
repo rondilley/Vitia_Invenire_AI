@@ -42,6 +42,8 @@ class Category(str, Enum):
     HARDENING = "Hardening"
     EVASION = "Defense Evasion"
     REMOTE_ACCESS = "Remote Access"
+    PATCHING = "Patch Management"
+    POLICY = "Security Policy"
     META = "Meta"
 
 

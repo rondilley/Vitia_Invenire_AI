@@ -56,6 +56,25 @@ checks:
   HK-001:
     finding_list: "finding_list_cis_microsoft_windows_11_enterprise_22h2_machine"
 
+  PATCH-001:
+    stale_days_critical: 90
+    stale_days_high: 30
+
+  VULN-001:
+    check_dotnet: true
+
+  EXT-001:
+    dangerous_permission_threshold: 3
+
+  FWUPD-001:
+    bios_age_high_days: 1096
+    bios_age_medium_days: 731
+
+  YARA-001:
+    scan_dirs: []
+    timeout_per_dir: 120
+    threads: 4
+
 severity:
   minimum: INFO
 

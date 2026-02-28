@@ -1,0 +1,146 @@
+{
+  "description": "Known malicious browser extension IDs from security research and advisories",
+  "last_updated": "2025-12-01",
+  "extensions": [
+    {
+      "id": "dgiijbfpmgfajllbmiclcolkmidjbloj",
+      "name": "The Great Suspender (Malware Fork)",
+      "browser": "chrome",
+      "severity": "CRITICAL",
+      "description": "Tab suspender extension acquired by malicious actor who injected tracking and ad fraud code, removed by Google February 2021, affected 2M users"
+    },
+    {
+      "id": "lmcajpniijdkhpbojoommkpbocbfnola",
+      "name": "Hover Zoom+ (DataSpii)",
+      "browser": "chrome",
+      "severity": "CRITICAL",
+      "description": "DataSpii campaign extension that collected and exfiltrated browsing history, form data, and page contents to third-party analytics firms"
+    },
+    {
+      "id": "bfnaelmomeimhlpmgjnjophhpkkoljpa",
+      "name": "Hola VPN (Bandwidth Selling)",
+      "browser": "chrome",
+      "severity": "HIGH",
+      "description": "VPN extension that sells user bandwidth via Luminati network, turning machines into exit nodes for unknown third-party traffic"
+    },
+    {
+      "id": "nkbihfbeogaeaoehlefnkodbefgpgknn",
+      "name": "MetaMask (Copycat Phishing)",
+      "browser": "chrome",
+      "severity": "CRITICAL",
+      "description": "Fake cryptocurrency wallet impersonator designed to steal seed phrases and private keys via cloned MetaMask UI"
+    },
+    {
+      "id": "jpgljallkmbpceoomibkefimlpjfocge",
+      "name": "CacheFlow Malicious Extension",
+      "browser": "chrome",
+      "severity": "CRITICAL",
+      "description": "CacheFlow campaign discovered by Avast, hiding C2 commands in Cache-Control HTTP headers to redirect search results and inject ads"
+    },
+    {
+      "id": "njmkdcjoohfaibmanolgifjmgmlhfall",
+      "name": "SearchBlox (Roblox Credential Stealer)",
+      "browser": "chrome",
+      "severity": "CRITICAL",
+      "description": "Chrome extension marketed as Roblox search tool containing a backdoor stealing Roblox credentials and Rolimons inventory data"
+    },
+    {
+      "id": "aapbdbdomjkkjkaonfhkkikfgjllcleb",
+      "name": "Google Translate Impersonator",
+      "browser": "chrome",
+      "severity": "CRITICAL",
+      "description": "Fake Google Translate extension mining cryptocurrency in background and injecting malicious scripts into web pages"
+    },
+    {
+      "id": "kpocjpoifmommoiiiamepombpeoaehfh",
+      "name": "ChromeLoader / Shampoo",
+      "browser": "chrome",
+      "severity": "CRITICAL",
+      "description": "ChromeLoader malware campaign hijacking browser search results, redirecting traffic, and injecting advertisements"
+    },
+    {
+      "id": "fhnegjjodccfaidlhijdoahddoknkge",
+      "name": "Dormant Colors",
+      "browser": "chrome",
+      "severity": "CRITICAL",
+      "description": "Dormant Colors campaign with over one million installs, hijacking search results and injecting affiliate tracking codes"
+    },
+    {
+      "id": "bhphemoobajcoaomlfaadlkpcobpgoeg",
+      "name": "VenomSoftX RAT Extension",
+      "browser": "chrome",
+      "severity": "CRITICAL",
+      "description": "Browser component of ViperSoftX malware functioning as a remote access trojan, stealing credentials and cryptocurrency wallet addresses"
+    },
+    {
+      "id": "okmicfadjnjibbldihmhfegcagafnpbo",
+      "name": "Rilide Stealer Extension",
+      "browser": "chrome",
+      "severity": "CRITICAL",
+      "description": "Steals cryptocurrency and credentials by impersonating legitimate extensions like Google Drive, intercepts 2FA codes"
+    },
+    {
+      "id": "fcdjajkneocpjpnhpmmpimmbkfbfkijj",
+      "name": "Web Paint (Adware)",
+      "browser": "chrome",
+      "severity": "HIGH",
+      "description": "Browser extension injecting unwanted advertisements and tracking browsing activity across all visited websites"
+    },
+    {
+      "id": "ljdobmomdgdljniohlhafpicelofendm",
+      "name": "PDF Toolbox",
+      "browser": "chrome",
+      "severity": "CRITICAL",
+      "description": "Part of 2023 campaign injecting malicious code into web pages, related extensions accumulated 87M combined downloads"
+    },
+    {
+      "id": "mpbjkejclgfgadiemmefgebjfooflfhl",
+      "name": "SpeakIt! (DataSpii)",
+      "browser": "chrome",
+      "severity": "CRITICAL",
+      "description": "DataSpii campaign text-to-speech extension covertly exfiltrating browsing data and page content to remote analytics servers"
+    },
+    {
+      "id": "pkedcjkdefgpdelpbcmbmeomcjbeemfm",
+      "name": "ChatGPT for Chrome (Fake)",
+      "browser": "chrome",
+      "severity": "CRITICAL",
+      "description": "Fake ChatGPT extension harvesting Facebook session cookies and Business account credentials for ad fraud campaigns"
+    },
+    {
+      "id": "mdjildafknihdffpkfmmpnpoiajppepe",
+      "name": "SearchManager",
+      "browser": "chrome",
+      "severity": "HIGH",
+      "description": "Browser hijacker modifying default search engine and new tab page to monetized alternatives, collecting search queries"
+    },
+    {
+      "id": "jid1-KKzOGWgsW3Ao4Q@jetpack",
+      "name": "Web Security",
+      "browser": "firefox",
+      "severity": "CRITICAL",
+      "description": "Firefox add-on with 220K users found transmitting full browsing history to servers in Germany"
+    },
+    {
+      "id": "AJi7KfMEaJJVkLM2dhmo",
+      "name": "Quick access to ChatGPT",
+      "browser": "edge",
+      "severity": "CRITICAL",
+      "description": "Edge extension stealing Facebook Business account tokens and session cookies for ad fraud operations"
+    },
+    {
+      "id": "bihmplhobchoageeokmgbdihknkjbknd",
+      "name": "Great Suspender No Track",
+      "browser": "chrome",
+      "severity": "HIGH",
+      "description": "Fork of The Great Suspender that retained analytics code transmitting tab URLs and browsing patterns to third parties"
+    },
+    {
+      "id": "gpdjojdkbbmdfjfahjcgigfpmkopogic",
+      "name": "Flash Player (Fake Update)",
+      "browser": "chrome",
+      "severity": "CRITICAL",
+      "description": "Fake Flash Player update extension distributing cryptocurrency miners and credential stealers via injected scripts"
+    }
+  ]
+}

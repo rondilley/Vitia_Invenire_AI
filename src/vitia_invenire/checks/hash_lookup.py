@@ -85,6 +85,100 @@ def _enumerate_files(scan_dirs: list[str], extensions: set[str], max_files: int)
     return target_files
 
 
+_VT_KEY_FILENAME = "virustotal.key.txt"
+
+# NSRL database filename (RDS Modern SQLite)
+_NSRL_DB_FILENAME = "NSRLFile.db"
+
+# Standard subdirectory under install root
+_NSRL_SUBDIR = "nsrl"
+
+
+def _find_nsrl_db() -> str:
+    """Locate the NSRL RDS Modern SQLite database.
+
+    Searches for NSRLFile.db in these locations (first match wins):
+      1. VITIA_NSRL_DB_PATH environment variable (explicit override)
+      2. %LOCALAPPDATA%/VitiaInvenire/nsrl/NSRLFile.db (standard install)
+      3. %LOCALAPPDATA%/VitiaInvenire/nsrl/*.db (any .db in nsrl dir)
+      4. Current working directory
+
+    Returns the path string or empty string if not found.
+    """
+    # Explicit environment variable takes priority
+    env_path = os.environ.get("VITIA_NSRL_DB_PATH", "")
+    if env_path and Path(env_path).exists():
+        return env_path
+
+    search_dirs: list[str] = []
+
+    # Standard install location
+    local_app_data = os.environ.get("LOCALAPPDATA", "")
+    if local_app_data:
+        search_dirs.append(
+            os.path.join(local_app_data, "VitiaInvenire", _NSRL_SUBDIR)
+        )
+
+    # Current working directory
+    search_dirs.append(os.getcwd())
+
+    for directory in search_dirs:
+        # Check for the standard filename first
+        db_path = os.path.join(directory, _NSRL_DB_FILENAME)
+        if Path(db_path).exists():
+            return db_path
+
+        # Fall back to any .db file in the directory
+        try:
+            for entry in os.listdir(directory):
+                if entry.lower().endswith(".db"):
+                    candidate = os.path.join(directory, entry)
+                    if Path(candidate).is_file():
+                        return candidate
+        except (OSError, PermissionError):
+            continue
+
+    return ""
+
+
+def _load_vt_key_from_file() -> str:
+    """Attempt to load a VirusTotal API key from a key file.
+
+    Searches for virustotal.key.txt in these locations (first match wins):
+      1. The Vitia Invenire install directory (%LOCALAPPDATA%/VitiaInvenire)
+      2. The current working directory
+      3. The user's home directory
+
+    Returns the key string (stripped) or empty string if not found.
+    """
+    search_dirs: list[str] = []
+
+    # Install directory (standard install location)
+    local_app_data = os.environ.get("LOCALAPPDATA", "")
+    if local_app_data:
+        search_dirs.append(os.path.join(local_app_data, "VitiaInvenire"))
+
+    # Current working directory
+    search_dirs.append(os.getcwd())
+
+    # User home directory
+    home = os.path.expanduser("~")
+    if home:
+        search_dirs.append(home)
+
+    for directory in search_dirs:
+        key_path = os.path.join(directory, _VT_KEY_FILENAME)
+        try:
+            with open(key_path, encoding="utf-8") as f:
+                key = f.read().strip()
+                if key:
+                    return key
+        except (OSError, FileNotFoundError, PermissionError):
+            continue
+
+    return ""
+
+
 class HashLookupCheck(BaseCheck):
     """Compare system binary hashes against NSRL and VirusTotal."""
 
@@ -101,36 +195,43 @@ class HashLookupCheck(BaseCheck):
     def run(self) -> list[Finding]:
         findings: list[Finding] = []
 
-        # Read configuration
-        nsrl_db_path = os.environ.get("VITIA_NSRL_DB_PATH", "")
+        # Read configuration -- auto-detect NSRL database and VT API key
+        nsrl_db_path = _find_nsrl_db()
         vt_api_key = os.environ.get("VITIA_VT_API_KEY", "")
         vt_rate_limit = _VT_DEFAULT_RATE_LIMIT
         vt_daily_limit = _VT_DEFAULT_DAILY_LIMIT
 
-        nsrl_available = nsrl_db_path and Path(nsrl_db_path).exists()
+        # Load VT API key from key file if not set via environment variable
+        if not vt_api_key:
+            vt_api_key = _load_vt_key_from_file()
+
+        nsrl_available = bool(nsrl_db_path) and Path(nsrl_db_path).exists()
         vt_available = bool(vt_api_key)
 
         if not nsrl_available and not vt_available:
             findings.append(Finding(
                 check_id=self.CHECK_ID,
-                title="Hash Lookup Partially Configured",
+                title="Hash Lookup Not Available",
                 description=(
-                    "Neither NSRL database path (VITIA_NSRL_DB_PATH) nor "
-                    "VirusTotal API key (VITIA_VT_API_KEY) is configured. "
-                    "Set environment variables or check_config.yaml to enable."
+                    "Neither the NSRL database nor a VirusTotal API key was "
+                    "found. The installer should have downloaded the NSRL "
+                    "database automatically. Re-run the installer or set "
+                    "VITIA_NSRL_DB_PATH to the database file."
                 ),
                 severity=Severity.INFO,
                 category=self.CATEGORY,
                 affected_item="Hash Lookup Configuration",
                 evidence=(
-                    f"NSRL DB path: {'configured' if nsrl_db_path else 'not set'}\n"
-                    f"NSRL DB exists: {nsrl_available}\n"
-                    f"VT API key: {'configured' if vt_api_key else 'not set'}"
+                    f"NSRL DB: {'found at ' + nsrl_db_path if nsrl_db_path else 'not found'}\n"
+                    f"VT API key: {'configured' if vt_api_key else 'not found'}\n"
+                    f"Searched for: {_NSRL_DB_FILENAME} in install dir, CWD\n"
+                    f"Searched for: {_VT_KEY_FILENAME} in install dir, CWD, home"
                 ),
                 recommendation=(
-                    "Download the NSRL RDS from https://www.nist.gov/itl/ssd/software-quality-group/national-software-reference-library-nsrl "
-                    "and set VITIA_NSRL_DB_PATH. Register for a VirusTotal API key "
-                    "at https://www.virustotal.com/ and set VITIA_VT_API_KEY."
+                    "Re-run the installer to download the NSRL database. "
+                    "Optionally register for a free VirusTotal API key at "
+                    "https://www.virustotal.com/ and save it to "
+                    "virustotal.key.txt in the install directory."
                 ),
                 references=[
                     "https://www.nist.gov/itl/ssd/software-quality-group/national-software-reference-library-nsrl",
@@ -329,49 +430,67 @@ class HashLookupCheck(BaseCheck):
     ) -> tuple[set[str], set[str]]:
         """Look up SHA256 hashes in NSRL SQLite database.
 
+        Uses batch queries for performance. The NSRL RDS v3 Modern Minimal
+        database uses views (FILE, MFG, OS, PKG) backed by a METADATA table.
+        We try FILE view first, then METADATA table, then DISTINCT_HASH view.
+
         Returns (known_hashes, unknown_hashes) tuple.
         """
         known: set[str] = set()
-        unknown: set[str] = set()
+
+        if not hashes:
+            return known, set()
+
+        # Uppercase all hashes for NSRL comparison (NSRL stores uppercase hex)
+        hash_list = [h.upper() for h in hashes]
+        # Map uppercase -> original for result mapping
+        upper_to_orig = {h.upper(): h for h in hashes}
 
         try:
             conn = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
             cursor = conn.cursor()
 
-            # NSRL RDS modern SQLite format uses 'FILE' table with 'sha256' column
-            # Try both common schema formats
-            for h in hashes:
-                h_upper = h.upper()
+            # Detect which table/view contains sha256 hashes (try once)
+            query_source = None
+            for candidate in ("FILE", "METADATA", "DISTINCT_HASH"):
                 try:
                     cursor.execute(
-                        "SELECT 1 FROM FILE WHERE sha256 = ? LIMIT 1",
-                        (h_upper,),
+                        f"SELECT sha256 FROM {candidate} LIMIT 1"  # noqa: S608
                     )
-                    row = cursor.fetchone()
-                    if row:
-                        known.add(h)
-                    else:
-                        unknown.add(h)
+                    query_source = candidate
+                    break
                 except sqlite3.OperationalError:
-                    # Try alternate schema
-                    try:
-                        cursor.execute(
-                            "SELECT 1 FROM NSRL_FILE WHERE sha256 = ? LIMIT 1",
-                            (h_upper,),
-                        )
-                        row = cursor.fetchone()
-                        if row:
-                            known.add(h)
-                        else:
-                            unknown.add(h)
-                    except sqlite3.OperationalError:
-                        unknown.add(h)
+                    continue
+
+            if not query_source:
+                conn.close()
+                return set(), set(hashes)
+
+            # Batch lookup in chunks of 500 (SQLite variable limit is 999)
+            batch_size = 500
+            for i in range(0, len(hash_list), batch_size):
+                batch = hash_list[i : i + batch_size]
+                placeholders = ",".join("?" for _ in batch)
+                try:
+                    cursor.execute(
+                        f"SELECT DISTINCT sha256 FROM {query_source} "  # noqa: S608
+                        f"WHERE sha256 IN ({placeholders})",
+                        batch,
+                    )
+                    for row in cursor.fetchall():
+                        found_hash = row[0]
+                        orig = upper_to_orig.get(found_hash)
+                        if orig:
+                            known.add(orig)
+                except sqlite3.OperationalError:
+                    break
 
             conn.close()
         except (sqlite3.Error, OSError):
             # If database access fails, treat all as unknown
-            unknown = hashes.copy()
+            return set(), set(hashes)
 
+        unknown = set(hashes) - known
         return known, unknown
 
     def _vt_lookup(

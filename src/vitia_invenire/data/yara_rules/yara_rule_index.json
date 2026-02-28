@@ -1,0 +1,24 @@
+{
+  "description": "Index of bundled YARA rules for malware detection",
+  "last_updated": "2025-12-01",
+  "rules": [
+    {
+      "file": "generic_malware.yar",
+      "category": "malware",
+      "severity": "CRITICAL",
+      "description": "Detection rules for common malware families, shellcode, RATs, and post-exploitation tools"
+    },
+    {
+      "file": "suspicious_strings.yar",
+      "category": "suspicious",
+      "severity": "HIGH",
+      "description": "Detection rules for suspicious but not definitively malicious indicators including obfuscation and persistence"
+    },
+    {
+      "file": "packer_crypto.yar",
+      "category": "packer",
+      "severity": "MEDIUM",
+      "description": "Detection rules for packed, encrypted, or obfuscated executables that may indicate evasion attempts"
+    }
+  ]
+}

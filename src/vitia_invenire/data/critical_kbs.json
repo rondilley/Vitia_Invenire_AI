@@ -1,0 +1,146 @@
+{
+  "description": "Critical Windows patches from CISA KEV and Microsoft advisories",
+  "last_updated": "2025-12-01",
+  "kbs": [
+    {
+      "kb": "KB4012212",
+      "cve": "CVE-2017-0144",
+      "severity": "CRITICAL",
+      "description": "Windows SMBv1 remote code execution (EternalBlue) - used in WannaCry and NotPetya",
+      "affected_builds": ["7601", "9600", "10240", "14393", "15063"]
+    },
+    {
+      "kb": "KB4571729",
+      "cve": "CVE-2020-1472",
+      "severity": "CRITICAL",
+      "description": "Netlogon elevation of privilege (Zerologon) - allows domain controller takeover",
+      "affected_builds": ["14393", "17763", "18362", "18363", "19041", "19042"]
+    },
+    {
+      "kb": "KB5004945",
+      "cve": "CVE-2021-34527",
+      "severity": "CRITICAL",
+      "description": "Windows Print Spooler remote code execution (PrintNightmare) - actively exploited",
+      "affected_builds": ["17763", "18363", "19041", "19042", "19043"]
+    },
+    {
+      "kb": "KB5004946",
+      "cve": "CVE-2021-1675",
+      "severity": "CRITICAL",
+      "description": "Windows Print Spooler elevation of privilege (PrintNightmare variant)",
+      "affected_builds": ["19041", "19042", "19043"]
+    },
+    {
+      "kb": "KB5005565",
+      "cve": "CVE-2021-36934",
+      "severity": "HIGH",
+      "description": "Windows SAM database access elevation of privilege (HiveNightmare/SeriousSAM)",
+      "affected_builds": ["19041", "19042", "19043"]
+    },
+    {
+      "kb": "KB5005033",
+      "cve": "CVE-2021-36942",
+      "severity": "HIGH",
+      "description": "Windows LSA spoofing vulnerability (PetitPotam) - NTLM relay attack vector",
+      "affected_builds": ["14393", "17763", "18363", "19041", "19042", "19043"]
+    },
+    {
+      "kb": "KB5012170",
+      "cve": "CVE-2022-21894",
+      "severity": "CRITICAL",
+      "description": "Secure Boot security feature bypass (BlackLotus bootkit exploit vector)",
+      "affected_builds": ["19041", "19042", "19043", "19044", "22000", "22621"]
+    },
+    {
+      "kb": "KB5034441",
+      "cve": "CVE-2024-20666",
+      "severity": "CRITICAL",
+      "description": "Windows BitLocker security feature bypass via WinRE exploitation",
+      "affected_builds": ["22621", "22631"]
+    },
+    {
+      "kb": "KB5034763",
+      "cve": "CVE-2024-21338",
+      "severity": "CRITICAL",
+      "description": "Windows Kernel elevation of privilege via appid.sys IOCTL - exploited by Lazarus Group",
+      "affected_builds": ["22621", "22631", "26100"]
+    },
+    {
+      "kb": "KB5035845",
+      "cve": "CVE-2024-21407",
+      "severity": "CRITICAL",
+      "description": "Hyper-V remote code execution via crafted file operations on guest VM",
+      "affected_builds": ["22621", "22631", "26100"]
+    },
+    {
+      "kb": "KB5037765",
+      "cve": "CVE-2024-30080",
+      "severity": "CRITICAL",
+      "description": "Microsoft Message Queuing remote code execution via crafted MSMQ packets",
+      "affected_builds": ["22621", "22631", "26100"]
+    },
+    {
+      "kb": "KB5039212",
+      "cve": "CVE-2024-30088",
+      "severity": "CRITICAL",
+      "description": "Windows Kernel elevation of privilege via race condition - actively exploited",
+      "affected_builds": ["22621", "22631", "26100"]
+    },
+    {
+      "kb": "KB5040442",
+      "cve": "CVE-2024-38063",
+      "severity": "CRITICAL",
+      "description": "Windows TCP/IP remote code execution via crafted IPv6 packets (wormable)",
+      "affected_builds": ["22621", "22631", "26100"]
+    },
+    {
+      "kb": "KB5041585",
+      "cve": "CVE-2024-38178",
+      "severity": "CRITICAL",
+      "description": "Scripting Engine memory corruption allowing remote code execution",
+      "affected_builds": ["22621", "22631", "26100"]
+    },
+    {
+      "kb": "KB5043076",
+      "cve": "CVE-2024-38217",
+      "severity": "HIGH",
+      "description": "Windows Mark of the Web security feature bypass - actively exploited since 2018",
+      "affected_builds": ["22621", "22631", "26100"]
+    },
+    {
+      "kb": "KB5044284",
+      "cve": "CVE-2024-43572",
+      "severity": "CRITICAL",
+      "description": "Microsoft Management Console remote code execution via crafted MSC files",
+      "affected_builds": ["22621", "22631", "26100"]
+    },
+    {
+      "kb": "KB5044285",
+      "cve": "CVE-2024-43573",
+      "severity": "HIGH",
+      "description": "MSHTML platform spoofing vulnerability - actively exploited",
+      "affected_builds": ["22621", "22631", "26100"]
+    },
+    {
+      "kb": "KB5046617",
+      "cve": "CVE-2024-49039",
+      "severity": "HIGH",
+      "description": "Windows Task Scheduler elevation of privilege - exploited by RomCom threat actor",
+      "affected_builds": ["22621", "22631", "26100"]
+    },
+    {
+      "kb": "KB5048667",
+      "cve": "CVE-2024-49138",
+      "severity": "CRITICAL",
+      "description": "Windows Common Log File System driver elevation of privilege - actively exploited",
+      "affected_builds": ["22621", "22631", "26100"]
+    },
+    {
+      "kb": "KB5040427",
+      "cve": "CVE-2024-38106",
+      "severity": "CRITICAL",
+      "description": "Windows Kernel elevation of privilege via race condition - actively exploited in the wild",
+      "affected_builds": ["22621", "22631", "26100"]
+    }
+  ]
+}
