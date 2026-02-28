@@ -244,6 +244,24 @@ if (Test-Path $pipExe) {
 Write-Host ""
 Write-Host "  [4/6] Installing Vitia Invenire ..."
 
+# Embeddable Python lacks setuptools/wheel -- install them first
+$prevErrorPref = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+
+Write-Host "         Installing build tools (setuptools, wheel) ..."
+$buildOutput = & $PythonExe -m pip install setuptools wheel --no-warn-script-location 2>&1
+$buildExitCode = $LASTEXITCODE
+$ErrorActionPreference = $prevErrorPref
+
+if ($buildExitCode -ne 0) {
+    Write-Host ""
+    Write-Host "         Failed to install build tools (exit code $buildExitCode):"
+    $buildOutput | ForEach-Object { Write-Host "         $_" }
+    Write-Host ""
+    Write-Error "Failed to install setuptools/wheel."
+    exit 1
+}
+
 $localSource = Find-LocalSource
 
 if ($localSource) {
