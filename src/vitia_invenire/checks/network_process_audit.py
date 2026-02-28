@@ -84,6 +84,20 @@ class NetworkProcessAuditCheck(BaseCheck):
         unexpected_count = 0
         total_listeners = len(listeners)
 
+        # Build context inventory for the report
+        listener_inventory = []
+        for l in listeners:
+            listener_inventory.append({
+                "address": f"{l.get('LocalAddress', '')}:{l.get('LocalPort', '')}",
+                "process": str(l.get("ProcessName", "Unknown")),
+                "pid": l.get("OwningProcess", 0),
+                "path": str(l.get("ProcessPath", "")),
+            })
+        self.context = {
+            "total_listeners": total_listeners,
+            "listeners": listener_inventory,
+        }
+
         for listener in listeners:
             local_addr = str(listener.get("LocalAddress", ""))
             local_port = listener.get("LocalPort", 0)

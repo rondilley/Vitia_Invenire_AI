@@ -48,6 +48,23 @@ class Category(str, Enum):
 CATEGORY_ORDER = {cat: i for i, cat in enumerate(Category)}
 
 
+class SystemInfo(BaseModel):
+    """System information matching Windows Settings > System > About."""
+    hostname: str = ""
+    os_product_name: str = ""  # e.g. "Windows 11 Pro"
+    os_display_version: str = ""  # e.g. "25H2"
+    os_build: str = ""  # e.g. "26200.7840"
+    os_edition_id: str = ""
+    system_type: str = ""  # e.g. "x64-based PC"
+    device_id: str = ""
+    product_id: str = ""
+    processor_name: str = ""
+    processor_cores: int = 0
+    processor_logical: int = 0
+    installed_ram_gb: float = 0.0
+    experience_pack: str = ""
+
+
 class Finding(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     check_id: str
@@ -72,6 +89,7 @@ class CheckResult(BaseModel):
     status: str  # "passed", "failed", "error", "skipped"
     duration_seconds: float = 0.0
     findings: list[Finding] = Field(default_factory=list)
+    context: dict = Field(default_factory=dict)
     error_message: str | None = None
 
 
@@ -127,6 +145,7 @@ class AssessmentReport(BaseModel):
     os_version: str
     scan_start: datetime
     scan_end: datetime
+    system_info: SystemInfo | None = None
     hardware_fingerprint: HardwareFingerprint | None = None
     binary_analysis_summary: dict | None = None
     results: list[CheckResult] = Field(default_factory=list)

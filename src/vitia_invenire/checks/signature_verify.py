@@ -227,6 +227,15 @@ class SignatureVerifyCheck(BaseCheck):
                     "message": result.get("StatusMessage", ""),
                 })
 
+        self.context = {
+            "total_checked": total_checked,
+            "valid": valid_count,
+            "unsigned_sys": len(unsigned_sys),
+            "unsigned_exe": len(unsigned_exe),
+            "unsigned_dll": len(unsigned_dll),
+            "invalid": len(invalid_sig),
+        }
+
         # Unsigned .sys drivers
         if unsigned_sys:
             findings.append(Finding(

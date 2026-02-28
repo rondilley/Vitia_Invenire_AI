@@ -26,6 +26,9 @@ class BaseCheck(ABC):
     REQUIRES_ADMIN: bool = False
     REQUIRES_TOOLS: list[str] = []
 
+    def __init__(self) -> None:
+        self.context: dict = {}
+
     def execute(self) -> CheckResult:
         """Execute the check with full lifecycle management.
 
@@ -82,6 +85,7 @@ class BaseCheck(ABC):
                 status=status,
                 duration_seconds=round(duration, 3),
                 findings=findings,
+                context=self.context,
             )
         except Exception as exc:
             duration = time.monotonic() - start_time
@@ -92,6 +96,7 @@ class BaseCheck(ABC):
                 status="error",
                 duration_seconds=round(duration, 3),
                 error_message=f"{type(exc).__name__}: {exc}",
+                context=self.context,
             )
 
     @abstractmethod

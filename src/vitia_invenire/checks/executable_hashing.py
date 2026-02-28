@@ -166,6 +166,17 @@ class ExecutableHashingCheck(BaseCheck):
         total_mb = total_bytes / (1024 * 1024)
         throughput_mb = total_mb / elapsed if elapsed > 0 else 0
 
+        self.context = {
+            "files_enumerated": len(target_files),
+            "files_hashed": hashed_count,
+            "files_errored": error_count,
+            "total_mb": round(total_mb, 1),
+            "elapsed_seconds": round(elapsed, 2),
+            "throughput_mb_s": round(throughput_mb, 1),
+            "by_extension": dict(sorted(extension_counts.items(), key=lambda x: -x[1])),
+            "by_directory": dict(sorted(dir_counts.items(), key=lambda x: -x[1])),
+        }
+
         # Build evidence summary
         ext_summary = "\n".join(
             f"  {ext}: {count} files"

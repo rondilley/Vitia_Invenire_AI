@@ -19,7 +19,8 @@ from vitia_invenire.models import (
     AssessmentReport,
     CheckResult,
 )
-from vitia_invenire.platform import get_hostname, get_os_version
+from vitia_invenire.models import HardwareFingerprint
+from vitia_invenire.platform import get_hostname, get_os_version, get_system_info
 
 console = Console()
 
@@ -139,7 +140,25 @@ class Engine:
             scan_start=scan_start,
             scan_end=scan_end,
             results=results,
+            system_info=get_system_info(),
         )
         report.compute_summary()
+        self._post_process(report)
 
         return report
+
+    def _post_process(self, report: AssessmentReport) -> None:
+        """Extract structured context from check results into report-level fields."""
+        for result in report.results:
+            if result.check_id == "HW-001" and result.context.get("fingerprint"):
+                fp = result.context["fingerprint"]
+                try:
+                    report.hardware_fingerprint = HardwareFingerprint(**fp)
+                except Exception:
+                    pass
+
+            if result.check_id in ("BIN-001", "HASH-001", "SIG-001", "CATALOG-001"):
+                if result.context:
+                    if report.binary_analysis_summary is None:
+                        report.binary_analysis_summary = {}
+                    report.binary_analysis_summary[result.check_id] = result.context

@@ -10,7 +10,7 @@ Vitia Invenire is a modular, plugin-based security assessment tool that audits W
 graph TD
     CLI["CLI Layer<br/>(cli.py / Click)<br/>Parses arguments, loads config, invokes engine"]
     ENGINE["Engine Layer<br/>(engine.py)<br/>Discovers checks, filters by config/privileges,<br/>orchestrates sequential execution, aggregates results"]
-    CHECKS["Check Modules<br/>(checks/*.py)<br/>50+ BaseCheck subclasses"]
+    CHECKS["Check Modules<br/>(checks/*.py)<br/>60+ BaseCheck subclasses"]
     REPORTERS["Reporter Layer<br/>(reporters/*.py)<br/>JSON, HTML, Console"]
     COLLECTORS["Collector Layer<br/>(collectors/*.py)<br/>PowerShell, Registry, WMI, Command subprocess runners<br/>Platform-guarded: return empty/skip on non-Windows"]
     OS["Windows OS / Hardware<br/>PowerShell cmdlets, WMI/CIM, Registry, Win32 APIs"]
@@ -169,6 +169,8 @@ class Config:
     output_formats: list[str]
     output_directory: str
     skip_admin_checks: bool
+    require_admin: bool
+    randomize_order: bool
     verbose: bool
 ```
 
@@ -506,8 +508,14 @@ Living-Off-the-Land vulnerable driver hashes from the LOLDrivers project. Driver
 ### known_pci_vendors.json
 Legitimate PCI vendor IDs (Intel, AMD, NVIDIA, Realtek, Broadcom, etc.) for whitelisting during PCI device audit.
 
-### suspicious_listeners.json
-Process names and port patterns associated with covert network listeners, packet capture tools, and port knockers. Includes well-known offensive tools (ncat, socat, netcat variants) and packet capture libraries (npcap, winpcap, raw socket indicators). Format: array of `{process_name, description, severity}`.
+### offensive_tools.json
+Known offensive tool signatures including process names, file hashes, and behavioral patterns. Covers common red team tools, RATs, and exploitation frameworks.
+
+### known_debug_devices.json
+Hardware device IDs for debug and development tools (JTAG adapters, Bus Pirate, Hak5 USB Rubber Ducky, logic analyzers). Used by GHOST-001 to detect evidence of debug hardware connected during integrator staging.
+
+### kernel_binaries.json
+Known Windows kernel binary filenames and expected locations for disk-side hashing by FILE-001.
 
 ## 11. Subsystem Firmware Audit (FW-SUB-001) Design
 

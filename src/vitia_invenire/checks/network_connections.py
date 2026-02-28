@@ -131,6 +131,21 @@ class NetworkConnectionsCheck(BaseCheck):
         c2_port_hits = 0
         unexpected_process_hits = 0
 
+        # Build context inventory (capped at 100)
+        conn_inventory = []
+        for c in connections[:100]:
+            conn_inventory.append({
+                "local": f"{c.get('LocalAddress', '')}:{c.get('LocalPort', '')}",
+                "remote": f"{c.get('RemoteAddress', '')}:{c.get('RemotePort', '')}",
+                "state": str(c.get("State", "")),
+                "process": str(c.get("ProcessName", "Unknown")),
+                "pid": c.get("OwningProcess", 0),
+            })
+        self.context = {
+            "total_connections": total_conns,
+            "connections": conn_inventory,
+        }
+
         for conn in connections:
             local_addr = str(conn.get("LocalAddress", ""))
             local_port = conn.get("LocalPort", 0)

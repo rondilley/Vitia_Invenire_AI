@@ -220,6 +220,14 @@ class HashLookupCheck(BaseCheck):
                 references=[],
             ))
 
+        self.context = {
+            "total_hashed": len(file_hashes),
+            "nsrl_available": nsrl_available,
+            "nsrl_known": len(nsrl_known),
+            "nsrl_unknown": len(nsrl_unknown),
+            "vt_available": vt_available,
+        }
+
         # VirusTotal lookup
         if vt_available:
             # Only submit unknown hashes to VT (or all if NSRL not available)
@@ -308,6 +316,11 @@ class HashLookupCheck(BaseCheck):
                 recommendation="Regularly check system binary hashes against VT.",
                 references=[],
             ))
+
+            self.context["vt_submitted"] = len(vt_batch)
+            self.context["vt_detected"] = len(detected_files)
+            self.context["vt_clean"] = clean_count
+            self.context["vt_errors"] = error_count
 
         return findings
 

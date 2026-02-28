@@ -14,13 +14,48 @@ Real-world supply chain compromises are documented and ongoing:
 
 Laptops assembled in Singapore (or any third-party integrator) pass through multiple hands -- component suppliers, assemblers, firmware flashers, OS image creators, QA testers -- any of whom could introduce malicious modifications.
 
+## Quick Deploy
+
+For fresh Windows 11 laptops with no Python or git installed. Paste this one-liner into PowerShell:
+
+```powershell
+powershell -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/rondilley/Vitia_Invenire_AI/main/install.ps1 | iex"
+```
+
+This downloads a standalone Python, installs Vitia Invenire, and runs a scan. No admin privileges required. Everything installs to `%LOCALAPPDATA%\VitiaInvenire` with no persistent system changes.
+
+### USB / Offline Install
+
+Copy the repository to a USB drive. On the target machine, open PowerShell in the repo directory:
+
+```powershell
+.\install.ps1
+```
+
+The installer detects the local source automatically -- no internet needed.
+
+### Options
+
+```powershell
+# Install without running a scan:
+.\install.ps1 -SkipScan
+
+# Custom install location:
+.\install.ps1 -InstallDir "D:\Tools\VitiaInvenire"
+
+# Uninstall (removes the install directory):
+.\install.ps1 -Uninstall
+# Or manually:
+Remove-Item -Recurse -Force "$env:LOCALAPPDATA\VitiaInvenire"
+```
+
 ## Capabilities
 
-Vitia Invenire performs **55+ security checks** across 15 categories, producing structured JSON and HTML reports with severity-scored findings.
+Vitia Invenire performs **60+ security checks** across 15 categories, producing structured JSON and HTML reports with severity-scored findings.
 
 ### Check Catalog
 
-#### Hardware & Firmware Fingerprinting (5 checks)
+#### Hardware & Firmware Fingerprinting (7 checks)
 
 | Check ID | Name | Description | Admin |
 |----------|------|-------------|-------|
@@ -29,8 +64,10 @@ Vitia Invenire performs **55+ security checks** across 15 categories, producing 
 | FW-SUB-001 | Subsystem Firmware Audit | Deep enumeration of every device with its own firmware or embedded processor -- any component a supplier could trojan. Covers audio codecs, NICs, WiFi/BT modules, GPUs, NVMe controllers, Thunderbolt controllers, webcams, fingerprint readers, TPM, Intel CSME, USB controllers, SD card readers, WWAN/LTE modems. Cross-references firmware versions against vendor-published baselines. | No |
 | SB-KEY-001 | Secure Boot Keys | UEFI Secure Boot key enrollment audit: PK, KEK, db, dbx validation | Yes |
 | PCI-001 | PCI Device Audit | PCI/PCIe device enumeration, vendor ID cross-reference, rogue device detection | No |
+| BIOS-CFG-001 | BIOS Configuration | BIOS/UEFI configuration audit: boot order, virtualization, TPM, Secure Boot settings | No |
+| GHOST-001 | Ghost Device Analysis | Registry forensics for previously connected devices (JTAG, debug hardware, Hak5 tools) | No |
 
-#### Executable & Library Integrity (6 checks)
+#### Executable & Library Integrity (7 checks)
 
 | Check ID | Name | Description | Admin |
 |----------|------|-------------|-------|
@@ -40,6 +77,7 @@ Vitia Invenire performs **55+ security checks** across 15 categories, producing 
 | SIG-001 | Signature Verification | Authenticode signature verification (embedded + catalog) for system binaries | No |
 | DLL-HIJACK-001 | DLL Hijack Detection | DLLs loaded from incorrect paths indicating DLL hijacking attacks | No |
 | HASH-001 | Hash Lookup | NIST NSRL and VirusTotal hash comparison for unknown binary classification | No |
+| CATALOG-001 | Catalog Integrity | Verify system files against Windows catalog signatures, detect HashMismatch tampering | No |
 
 #### OEM Pre-Installation (5 checks)
 
@@ -51,7 +89,7 @@ Vitia Invenire performs **55+ security checks** across 15 categories, producing 
 | OOBE-001 | OOBE Customization | OEM first-boot tasks, Unattend.xml, default profile audit | No |
 | TELEM-001 | Telemetry Config | DiagTrack endpoint redirection, WER endpoint config | No |
 
-#### Supply Chain Priority (9 checks)
+#### Supply Chain Priority (10 checks)
 
 | Check ID | Name | Description | Admin |
 |----------|------|-------------|-------|
@@ -64,6 +102,7 @@ Vitia Invenire performs **55+ security checks** across 15 categories, producing 
 | DRV-001 | Driver Integrity | Driver signature verification, LOLDrivers cross-reference | Yes |
 | SVC-001 | Service Analysis | Unauthorized services, unquoted paths, suspicious binary locations | No |
 | NET-CFG-001 | Network Config | Hosts file tampering, DNS, proxy, NRPT, PAC file analysis | No |
+| INTEGRITY-001 | Cross-Path Integrity | Cross-validation of system data via multiple query paths to detect rootkit hooking | Yes |
 
 #### Secondary Built-in (10 checks)
 
@@ -128,6 +167,12 @@ Vitia Invenire performs **55+ security checks** across 15 categories, producing 
 | NMAP-001 | Nmap Scan | Local port scan with service detection and vulnerability NSE scripts | No |
 | NESSUS-001 | Nessus Scan | Nessus credentialed local scan via pyTenable REST API | Yes |
 | CIS-001 | CIS-CAT Scan | CIS-CAT Pro CLI Windows 11 Enterprise benchmark | Yes |
+
+#### Meta (1 check)
+
+| Check ID | Name | Description | Admin |
+|----------|------|-------------|-------|
+| DATA-001 | Reference Data Staleness | Checks age of bundled reference data files and warns when they need updating | No |
 
 ### Threat Coverage Matrix
 
@@ -219,6 +264,18 @@ vitia-invenire scan --format console,json,html --output-dir ./reports
 vitia-invenire scan --skip-admin-checks
 ```
 
+### Require admin (exit with error if not elevated)
+
+```bash
+vitia-invenire scan --require-admin
+```
+
+### Randomize check execution order (anti-evasion)
+
+```bash
+vitia-invenire scan --randomize-order
+```
+
 ### Use custom configuration
 
 ```bash
@@ -231,6 +288,30 @@ vitia-invenire scan --config my_config.yaml
 python -m vitia_invenire scan --list-checks
 ```
 
+### Create a golden image baseline from a trusted device
+
+```bash
+vitia-invenire baseline create --output golden.json
+```
+
+### Compare current system against a baseline
+
+```bash
+vitia-invenire baseline compare --baseline golden.json
+```
+
+### Passive network beaconing monitor
+
+```bash
+vitia-invenire monitor --duration 300 --output-dir ./reports
+```
+
+### Update reference data (run on a trusted machine, not the device under assessment)
+
+```bash
+vitia-invenire update-data
+```
+
 ## CLI Reference
 
 ```
@@ -239,13 +320,41 @@ vitia-invenire scan [OPTIONS]
 Options:
   --categories TEXT     Comma-separated categories to run (default: all)
   --severity TEXT       Minimum severity to report (default: INFO)
-  --output-dir PATH    Output directory for reports (default: ./reports)
+  --output-dir TEXT     Output directory for reports (default: ./reports)
   --format TEXT         Output formats: json,html,console (default: console,json)
-  --config PATH        Path to config YAML (default: built-in)
+  --config PATH        Path to config YAML
   --skip-admin-checks  Skip checks requiring admin privileges
+  --require-admin      Exit with error if not running as admin
+  --randomize-order    Randomize check execution order (anti-evasion)
   --list-checks        List all available checks and exit
   --verbose            Verbose output during scanning
   --help               Show help message and exit
+```
+
+```
+vitia-invenire baseline [create|compare] [OPTIONS]
+
+Options:
+  --output TEXT        Output file for baseline, create mode (default: baseline.json)
+  --baseline PATH     Baseline file to compare against, compare mode
+  --config PATH       Path to config YAML
+  --help              Show help message and exit
+```
+
+```
+vitia-invenire monitor [OPTIONS]
+
+Options:
+  --duration INTEGER   Monitoring duration in seconds (default: 300)
+  --output-dir TEXT    Output directory for monitor results (default: ./reports)
+  --help              Show help message and exit
+```
+
+```
+vitia-invenire update-data
+
+Fetch latest reference data from trusted sources.
+Run this on a TRUSTED machine, not on the device under assessment.
 ```
 
 ## Output Formats
@@ -356,7 +465,7 @@ src/vitia_invenire/
         registry.py         # Windows Registry reader
         wmi_collector.py    # WMI query wrapper
         command.py          # Generic subprocess runner
-    checks/                 # 55+ security check modules
+    checks/                 # 60+ security check modules
         base.py             # BaseCheck abstract base class
         ...                 # One module per check
     reporters/              # Output formatters
@@ -366,16 +475,22 @@ src/vitia_invenire/
     templates/
         report.html.j2      # HTML report template
     data/                   # Reference data files
+        check_config.yaml       # Default check configuration
+        kernel_binaries.json    # Known Windows kernel binary hashes
         known_good_certs.json
         known_bad_certs.json
-        suspicious_ports.json
-        suspicious_listeners.json  # Known suspicious listener process names/ports
-        lol_drivers.json
+        known_debug_devices.json  # JTAG, Bus Pirate, Hak5, etc.
         known_pci_vendors.json
-        ...
+        lol_drivers.json
+        offensive_tools.json    # Known offensive tool signatures
+        suspicious_imports.json
+        suspicious_pipes.json
+        suspicious_ports.json
 tests/                      # Test suite
 ```
 
 ## License
 
-Proprietary. Internal use only.
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+See [LICENSE](LICENSE) for the full text.

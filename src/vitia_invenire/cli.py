@@ -261,12 +261,21 @@ def _compare_reports(baseline: "AssessmentReport", current: "AssessmentReport"):
 
 
 @main.command(name="update-data")
-def update_data():
+@click.option("--catalog-export", "catalog_export_path", default=None, type=click.Path(),
+              help="Export catalog verification results to JSON file")
+def update_data(catalog_export_path: str | None):
     """Fetch latest reference data from trusted sources.
 
     Run this on a TRUSTED machine, not on the device under assessment.
     Copy the updated data files to the assessment USB drive.
+
+    Use --catalog-export to run CATALOG-001 and export all file verification
+    results as a JSON baseline for comparison across devices.
     """
+    if catalog_export_path:
+        _export_catalog(catalog_export_path)
+        return
+
     console.print("[bold]Reference data update[/bold]")
     console.print()
     console.print("This command will fetch updated reference data from:")
@@ -276,6 +285,63 @@ def update_data():
     console.print()
     console.print("[yellow]Not yet implemented. Reference data files must be updated manually.[/yellow]")
     console.print("See README.md for data file format documentation.")
+
+
+def _export_catalog(output_path: str) -> None:
+    """Run CATALOG-001 and export all results as JSON."""
+    import json
+    from datetime import datetime, timezone
+
+    from vitia_invenire.checks.catalog_integrity import CatalogIntegrityCheck
+    from vitia_invenire.platform import get_hostname, get_os_version
+
+    console.print("[bold]Catalog verification export[/bold]")
+    console.print()
+
+    check = CatalogIntegrityCheck()
+    console.print("Running catalog integrity verification...")
+    result = check.execute()
+
+    if result.status == "skipped":
+        console.print(f"[yellow]Skipped: {result.error_message}[/yellow]")
+        return
+
+    if result.status == "error":
+        console.print(f"[red]Error: {result.error_message}[/red]")
+        return
+
+    all_results = result.context.get("_all_results", [])
+    summary = {
+        "total_files": result.context.get("total_files", 0),
+        "catalog_verified": result.context.get("catalog_verified", 0),
+        "third_party_signed": result.context.get("third_party_signed", 0),
+        "hash_mismatch": result.context.get("hash_mismatch", 0),
+        "not_signed": result.context.get("not_signed", 0),
+        "errors": result.context.get("errors", 0),
+        "verification_rate_pct": result.context.get("verification_rate_pct", 0.0),
+    }
+
+    export_data = {
+        "export_type": "catalog_verification",
+        "export_version": "1.0",
+        "hostname": get_hostname(),
+        "os_version": get_os_version(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "summary": summary,
+        "files": all_results,
+    }
+
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(export_data, f, indent=2)
+
+    console.print(f"Exported {len(all_results)} file verification results")
+    console.print(f"  Catalog verified: {summary['catalog_verified']}")
+    console.print(f"  Third-party signed: {summary['third_party_signed']}")
+    console.print(f"  Hash mismatch: {summary['hash_mismatch']}")
+    console.print(f"  Unsigned: {summary['not_signed']}")
+    console.print(f"  Errors: {summary['errors']}")
+    console.print()
+    console.print(f"Written to: {output_path}")
 
 
 @main.command()

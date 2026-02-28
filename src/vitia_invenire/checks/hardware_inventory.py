@@ -194,6 +194,42 @@ class HardwareInventoryCheck(BaseCheck):
         for comp in all_components:
             type_counts[comp.component_type] = type_counts.get(comp.component_type, 0) + 1
 
+        # Build fingerprint dict from SystemProduct/Baseboard/TPM components
+        fingerprint: dict = {}
+        for comp in all_components:
+            if comp.component_type == "SystemProduct":
+                fingerprint["system_manufacturer"] = comp.properties.get("Vendor", comp.manufacturer)
+                fingerprint["system_model"] = comp.properties.get("Name", comp.model)
+                fingerprint["system_serial"] = comp.properties.get("IdentifyingNumber", comp.serial_number or "")
+                fingerprint["system_uuid"] = comp.properties.get("UUID", "")
+            elif comp.component_type == "Baseboard":
+                fingerprint.setdefault("bios_vendor", comp.manufacturer)
+                fingerprint.setdefault("bios_version", comp.firmware_version or "")
+
+        # Ensure required fingerprint fields have defaults
+        for key in ("hostname", "system_manufacturer", "system_model",
+                     "system_serial", "system_uuid", "bios_version", "bios_vendor"):
+            fingerprint.setdefault(key, "Unknown")
+
+        # Set hostname from platform
+        try:
+            from vitia_invenire.platform import get_hostname
+            fingerprint["hostname"] = get_hostname()
+        except Exception:
+            pass
+
+        # Add TPM info if present
+        for comp in all_components:
+            if comp.component_type == "TPM":
+                fingerprint["tpm_version"] = comp.properties.get("SpecVersion", "")
+                fingerprint["tpm_manufacturer"] = comp.manufacturer
+
+        self.context = {
+            "fingerprint": fingerprint,
+            "components": [comp.model_dump() for comp in all_components],
+            "type_counts": dict(sorted(type_counts.items())),
+        }
+
         summary_lines = [f"  {ctype}: {count}" for ctype, count in sorted(type_counts.items())]
         summary_text = "\n".join(summary_lines) if summary_lines else "  No components detected"
 

@@ -11,8 +11,19 @@
   h1 { font-size: 1.8em; margin-bottom: 5px; }
   h2 { font-size: 1.3em; margin: 25px 0 10px; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
   h3 { font-size: 1.1em; margin: 15px 0 8px; }
+  h4 { font-size: 1em; margin: 10px 0 6px; }
   .header { background: #2c3e50; color: white; padding: 20px; margin-bottom: 20px; }
   .header .meta { font-size: 0.9em; opacity: 0.8; margin-top: 5px; }
+
+  /* System info grid */
+  .system-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 15px 0; border-radius: 6px; overflow: hidden; }
+  .system-info-grid .info-col { padding: 0; }
+  .system-info-grid .info-row { display: flex; padding: 6px 12px; border-bottom: 1px solid #ecf0f1; font-size: 0.9em; }
+  .system-info-grid .info-row:last-child { border-bottom: none; }
+  .system-info-grid .info-label { font-weight: 600; min-width: 140px; color: #555; }
+  .system-info-grid .info-value { flex: 1; word-break: break-all; }
+
+  /* Summary grids */
   .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 15px 0; }
   .summary-card { background: white; border-radius: 6px; padding: 15px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
   .summary-card .count { font-size: 2em; font-weight: bold; }
@@ -20,10 +31,46 @@
   .status-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0; }
   .status-card { background: white; border-radius: 6px; padding: 12px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
   .status-card .count { font-size: 1.5em; font-weight: bold; }
+
+  /* Metrics grid for dashboards */
+  .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin: 10px 0; }
+  .metric-card { background: white; border-radius: 6px; padding: 12px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-top: 3px solid #3498db; }
+  .metric-card .metric-value { font-size: 1.5em; font-weight: bold; color: #2c3e50; }
+  .metric-card .metric-label { font-size: 0.8em; text-transform: uppercase; opacity: 0.7; }
+  .metric-card.metric-good { border-top-color: #27ae60; }
+  .metric-card.metric-warn { border-top-color: #f39c12; }
+  .metric-card.metric-bad { border-top-color: #e74c3c; }
+
+  /* Category sections */
+  .category-section { margin: 20px 0; background: white; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; }
+  .cat-header { background: #34495e; color: white; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .cat-header h3 { color: white; margin: 0; }
+  .cat-overview { display: flex; gap: 15px; font-size: 0.85em; }
+  .cat-overview .cat-stat { opacity: 0.9; }
+  .cat-body { padding: 16px; }
+
+  /* Check sections within a category */
+  .check-section { border: 1px solid #ecf0f1; border-radius: 4px; margin: 10px 0; }
+  .check-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #f8f9fa; border-bottom: 1px solid #ecf0f1; }
+  .check-header .check-id { font-weight: bold; font-family: monospace; margin-right: 10px; }
+  .check-header .check-name { flex: 1; }
+  .check-header .check-meta { display: flex; gap: 10px; align-items: center; font-size: 0.85em; }
+  .check-body { padding: 8px 12px; }
+  .check-context { margin: 8px 0; }
+  .check-context table { margin: 5px 0; font-size: 0.85em; }
+  .check-context td { padding: 3px 8px; }
+  .check-context td:first-child { font-weight: 600; color: #555; }
+
+  /* Tables */
   table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin: 10px 0; }
   th { background: #34495e; color: white; padding: 10px 12px; text-align: left; font-size: 0.85em; text-transform: uppercase; }
   td { padding: 8px 12px; border-bottom: 1px solid #ecf0f1; font-size: 0.9em; }
   tr:hover { background: #f8f9fa; }
+  .compact-table { box-shadow: none; margin: 5px 0; }
+  .compact-table th { padding: 6px 8px; font-size: 0.8em; }
+  .compact-table td { padding: 4px 8px; font-size: 0.85em; }
+
+  /* Severity and status badges */
   .sev { display: inline-block; padding: 2px 8px; border-radius: 3px; color: white; font-size: 0.8em; font-weight: bold; min-width: 70px; text-align: center; }
   .sev-CRITICAL { background: {{ severity_colors.CRITICAL }}; }
   .sev-HIGH { background: {{ severity_colors.HIGH }}; }
@@ -35,6 +82,8 @@
   .status-failed { background: #e74c3c; color: white; }
   .status-error { background: #8e44ad; color: white; }
   .status-skipped { background: #bdc3c7; color: #2c3e50; }
+
+  /* Finding details */
   .finding-detail { background: #f8f9fa; border-left: 4px solid #3498db; padding: 12px; margin: 8px 0; }
   .finding-detail.sev-border-CRITICAL { border-left-color: {{ severity_colors.CRITICAL }}; }
   .finding-detail.sev-border-HIGH { border-left-color: {{ severity_colors.HIGH }}; }
@@ -46,14 +95,13 @@
   .evidence { background: #2c3e50; color: #ecf0f1; padding: 8px 12px; border-radius: 4px; font-family: monospace; font-size: 0.85em; white-space: pre-wrap; word-break: break-all; max-height: 200px; overflow-y: auto; margin: 5px 0; }
   details { margin: 5px 0; }
   details summary { cursor: pointer; font-weight: bold; padding: 4px 0; }
-  .filters { margin: 10px 0; }
-  .filters label { margin-right: 15px; font-size: 0.9em; }
-  .filters input[type="checkbox"] { margin-right: 4px; }
+
   @media print {
     body { background: white; }
     .header { background: #2c3e50 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .no-print { display: none; }
     .finding-detail { break-inside: avoid; }
+    .category-section { break-inside: avoid; }
   }
 </style>
 </head>
@@ -73,6 +121,28 @@
 </div>
 
 <div class="container">
+
+{% if report.system_info %}
+<h2>System Information</h2>
+<div class="system-info-grid">
+  <div class="info-col">
+    <div class="info-row"><span class="info-label">Device Name</span><span class="info-value">{{ report.system_info.hostname }}</span></div>
+    <div class="info-row"><span class="info-label">Processor</span><span class="info-value">{{ report.system_info.processor_name or 'N/A' }}</span></div>
+    <div class="info-row"><span class="info-label">Cores / Logical</span><span class="info-value">{{ report.system_info.processor_cores }} / {{ report.system_info.processor_logical }}</span></div>
+    <div class="info-row"><span class="info-label">Installed RAM</span><span class="info-value">{{ report.system_info.installed_ram_gb }} GB</span></div>
+    <div class="info-row"><span class="info-label">Device ID</span><span class="info-value">{{ report.system_info.device_id or 'N/A' }}</span></div>
+    <div class="info-row"><span class="info-label">Product ID</span><span class="info-value">{{ report.system_info.product_id or 'N/A' }}</span></div>
+  </div>
+  <div class="info-col">
+    <div class="info-row"><span class="info-label">Edition</span><span class="info-value">{{ report.system_info.os_product_name or 'N/A' }}</span></div>
+    <div class="info-row"><span class="info-label">Version</span><span class="info-value">{{ report.system_info.os_display_version or 'N/A' }}</span></div>
+    <div class="info-row"><span class="info-label">OS Build</span><span class="info-value">{{ report.system_info.os_build or 'N/A' }}</span></div>
+    <div class="info-row"><span class="info-label">Edition ID</span><span class="info-value">{{ report.system_info.os_edition_id or 'N/A' }}</span></div>
+    <div class="info-row"><span class="info-label">System Type</span><span class="info-value">{{ report.system_info.system_type or 'N/A' }}</span></div>
+    <div class="info-row"><span class="info-label">Experience Pack</span><span class="info-value">{{ report.system_info.experience_pack or 'N/A' }}</span></div>
+  </div>
+</div>
+{% endif %}
 
 <h2>Executive Summary</h2>
 
@@ -108,83 +178,245 @@
   </div>
 </div>
 
-{% if category_counts %}
-<h2>Findings by Category</h2>
-<table>
-  <thead>
-    <tr>
-      <th>Category</th>
-      {% for sev in severities %}
-      <th>{{ sev }}</th>
-      {% endfor %}
-    </tr>
-  </thead>
-  <tbody>
-    {% for cat, counts in category_counts.items() %}
-    <tr>
-      <td>{{ cat }}</td>
-      {% for sev in severities %}
-      <td>{% if counts.get(sev, 0) > 0 %}<span class="sev sev-{{ sev }}">{{ counts[sev] }}</span>{% else %}0{% endif %}</td>
-      {% endfor %}
-    </tr>
+{% for cat, results in category_results.items() %}
+{% set stats = category_stats[cat] %}
+<div class="category-section">
+  <div class="cat-header">
+    <h3>{{ cat }}</h3>
+    <div class="cat-overview">
+      <span class="cat-stat">{{ stats.check_count }} checks</span>
+      <span class="cat-stat" style="color: #a3d9a5;">{{ stats.passed }} passed</span>
+      {% if stats.failed > 0 %}<span class="cat-stat" style="color: #f5b7b1;">{{ stats.failed }} failed</span>{% endif %}
+      {% if stats.errored > 0 %}<span class="cat-stat" style="color: #d2b4de;">{{ stats.errored }} errors</span>{% endif %}
+      {% if stats.skipped > 0 %}<span class="cat-stat" style="color: #d5dbdb;">{{ stats.skipped }} skipped</span>{% endif %}
+      <span class="cat-stat">{{ stats.finding_count }} findings</span>
+    </div>
+  </div>
+  <div class="cat-body">
+
+    {# Binary Integrity dashboard #}
+    {% if cat == 'Binary Integrity' and binary_context %}
+    <h4>Binary Integrity Overview</h4>
+    <div class="metrics-grid">
+      {% if binary_context.hashing %}
+      <div class="metric-card">
+        <div class="metric-value">{{ binary_context.hashing.files_hashed | default(0) }}</div>
+        <div class="metric-label">Files Hashed</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">{{ binary_context.hashing.total_mb | default(0) }} MB</div>
+        <div class="metric-label">Total Size</div>
+      </div>
+      {% endif %}
+      {% if binary_context.hash_lookup %}
+      <div class="metric-card metric-good">
+        <div class="metric-value">{{ binary_context.hash_lookup.nsrl_known | default(0) }}</div>
+        <div class="metric-label">NSRL Known</div>
+      </div>
+      <div class="metric-card metric-warn">
+        <div class="metric-value">{{ binary_context.hash_lookup.nsrl_unknown | default(0) }}</div>
+        <div class="metric-label">NSRL Unknown</div>
+      </div>
+      {% if binary_context.hash_lookup.vt_detected is defined %}
+      <div class="metric-card{% if binary_context.hash_lookup.vt_detected > 0 %} metric-bad{% else %} metric-good{% endif %}">
+        <div class="metric-value">{{ binary_context.hash_lookup.vt_detected }}</div>
+        <div class="metric-label">VT Detections</div>
+      </div>
+      {% endif %}
+      {% endif %}
+      {% if binary_context.signatures %}
+      <div class="metric-card metric-good">
+        <div class="metric-value">{{ binary_context.signatures.valid | default(0) }}</div>
+        <div class="metric-label">Valid Sigs</div>
+      </div>
+      <div class="metric-card{% if (binary_context.signatures.unsigned_sys | default(0)) + (binary_context.signatures.unsigned_exe | default(0)) > 0 %} metric-warn{% endif %}">
+        <div class="metric-value">{{ (binary_context.signatures.unsigned_sys | default(0)) + (binary_context.signatures.unsigned_exe | default(0)) + (binary_context.signatures.unsigned_dll | default(0)) }}</div>
+        <div class="metric-label">Unsigned</div>
+      </div>
+      {% if binary_context.signatures.invalid | default(0) > 0 %}
+      <div class="metric-card metric-bad">
+        <div class="metric-value">{{ binary_context.signatures.invalid }}</div>
+        <div class="metric-label">Invalid Sigs</div>
+      </div>
+      {% endif %}
+      {% endif %}
+    </div>
+
+    {# Catalog Integrity dashboard #}
+    {% if binary_context.catalog %}
+    <h4>Catalog Integrity Verification</h4>
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-value">{{ binary_context.catalog.total_files | default(0) }}</div>
+        <div class="metric-label">Files Checked</div>
+      </div>
+      <div class="metric-card metric-good">
+        <div class="metric-value">{{ binary_context.catalog.catalog_verified | default(0) }}</div>
+        <div class="metric-label">Catalog Verified</div>
+      </div>
+      <div class="metric-card{% if (binary_context.catalog.verification_rate_pct | default(0)) < 80 %} metric-warn{% else %} metric-good{% endif %}">
+        <div class="metric-value">{{ binary_context.catalog.verification_rate_pct | default(0) }}%</div>
+        <div class="metric-label">Verification Rate</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">{{ binary_context.catalog.third_party_signed | default(0) }}</div>
+        <div class="metric-label">Third-Party Signed</div>
+      </div>
+      {% if binary_context.catalog.hash_mismatch | default(0) > 0 %}
+      <div class="metric-card metric-bad">
+        <div class="metric-value">{{ binary_context.catalog.hash_mismatch }}</div>
+        <div class="metric-label">Hash Mismatch</div>
+      </div>
+      {% endif %}
+      {% if binary_context.catalog.not_signed | default(0) > 0 %}
+      <div class="metric-card metric-warn">
+        <div class="metric-value">{{ binary_context.catalog.not_signed }}</div>
+        <div class="metric-label">Unsigned</div>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if binary_context.catalog.hash_mismatch_files %}
+    <details open>
+      <summary>Hash Mismatch Files ({{ binary_context.catalog.hash_mismatch_files | length }})</summary>
+      <table class="compact-table">
+        <thead><tr><th>File Path</th><th>SHA256</th><th>Status</th><th>Message</th></tr></thead>
+        <tbody>
+          {% for f in binary_context.catalog.hash_mismatch_files[:100] %}
+          <tr>
+            <td style="max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ f.file }}">{{ f.file }}</td>
+            <td style="font-family:monospace;font-size:0.8em;">{{ f.sha256[:16] }}...</td>
+            <td><span class="sev sev-CRITICAL">{{ f.status }}</span></td>
+            <td>{{ f.message }}</td>
+          </tr>
+          {% endfor %}
+          {% if binary_context.catalog.hash_mismatch_files | length > 100 %}
+          <tr><td colspan="4" style="text-align:center;font-style:italic;">... and {{ binary_context.catalog.hash_mismatch_files | length - 100 }} more</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </details>
+    {% endif %}
+
+    {% if binary_context.catalog.not_signed_files %}
+    <details>
+      <summary>Unsigned Files ({{ binary_context.catalog.not_signed_files | length }})</summary>
+      <table class="compact-table">
+        <thead><tr><th>File Path</th><th>SHA256</th><th>Extension</th></tr></thead>
+        <tbody>
+          {% for f in binary_context.catalog.not_signed_files[:50] %}
+          <tr>
+            <td style="max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ f.file }}">{{ f.file }}</td>
+            <td style="font-family:monospace;font-size:0.8em;">{{ f.sha256[:16] }}...</td>
+            <td>{{ f.extension }}</td>
+          </tr>
+          {% endfor %}
+          {% if binary_context.catalog.not_signed_files | length > 50 %}
+          <tr><td colspan="3" style="text-align:center;font-style:italic;">... and {{ binary_context.catalog.not_signed_files | length - 50 }} more</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </details>
+    {% endif %}
+    {% endif %}
+
+    {% endif %}
+
+    {# Network dashboard #}
+    {% if cat == 'Network' and network_context %}
+    <h4>Network Overview</h4>
+    {% if network_context.listeners and network_context.listeners.listeners %}
+    <details open>
+      <summary>Listening Ports ({{ network_context.listeners.total_listeners }})</summary>
+      <table class="compact-table">
+        <thead><tr><th>Address</th><th>Process</th><th>PID</th><th>Path</th></tr></thead>
+        <tbody>
+          {% for l in network_context.listeners.listeners[:50] %}
+          <tr>
+            <td>{{ l.address }}</td>
+            <td>{{ l.process }}</td>
+            <td>{{ l.pid }}</td>
+            <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="{{ l.path }}">{{ l.path }}</td>
+          </tr>
+          {% endfor %}
+          {% if network_context.listeners.listeners | length > 50 %}
+          <tr><td colspan="4" style="text-align:center;font-style:italic;">... and {{ network_context.listeners.listeners | length - 50 }} more</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </details>
+    {% endif %}
+    {% if network_context.connections and network_context.connections.connections %}
+    <details>
+      <summary>Active Connections ({{ network_context.connections.total_connections }})</summary>
+      <table class="compact-table">
+        <thead><tr><th>Local</th><th>Remote</th><th>State</th><th>Process</th><th>PID</th></tr></thead>
+        <tbody>
+          {% for c in network_context.connections.connections[:50] %}
+          <tr>
+            <td>{{ c.local }}</td>
+            <td>{{ c.remote }}</td>
+            <td>{{ c.state }}</td>
+            <td>{{ c.process }}</td>
+            <td>{{ c.pid }}</td>
+          </tr>
+          {% endfor %}
+          {% if network_context.connections.connections | length > 50 %}
+          <tr><td colspan="5" style="text-align:center;font-style:italic;">... and {{ network_context.connections.connections | length - 50 }} more</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </details>
+    {% endif %}
+    {% endif %}
+
+    {# Per-check subsections #}
+    {% for result in results %}
+    <div class="check-section">
+      <div class="check-header">
+        <span class="check-id">{{ result.check_id }}</span>
+        <span class="check-name">{{ result.check_name }}</span>
+        <div class="check-meta">
+          <span class="status status-{{ result.status }}">{{ result.status }}</span>
+          <span>{{ result.findings | length }} findings</span>
+          <span>{{ "%.1f"|format(result.duration_seconds) }}s</span>
+        </div>
+      </div>
+      {% if result.findings %}
+      <div class="check-body">
+        {% for finding in result.findings %}
+        <div class="finding-detail sev-border-{{ finding.severity.value }}">
+          <h4>
+            <span class="sev sev-{{ finding.severity.value }}">{{ finding.severity.value }}</span>
+            {{ finding.title }}
+          </h4>
+          <div class="finding-field"><strong>Affected:</strong> {{ finding.affected_item }}</div>
+          <div class="finding-field"><strong>Description:</strong> {{ finding.description }}</div>
+          <details>
+            <summary>Evidence</summary>
+            <div class="evidence">{{ finding.evidence }}</div>
+          </details>
+          <div class="finding-field"><strong>Recommendation:</strong> {{ finding.recommendation }}</div>
+          {% if finding.references %}
+          <div class="finding-field"><strong>References:</strong> {{ finding.references | join(', ') }}</div>
+          {% endif %}
+          {% if finding.cvss_score is not none %}
+          <div class="finding-field"><strong>CVSS:</strong> {{ finding.cvss_score }} ({{ finding.cvss_vector }})</div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% elif result.error_message %}
+      <div class="check-body">
+        <div class="finding-field" style="color:#8e44ad;">{{ result.error_message }}</div>
+      </div>
+      {% endif %}
+    </div>
     {% endfor %}
-  </tbody>
-</table>
-{% endif %}
 
-<h2>Check Results</h2>
-<table>
-  <thead>
-    <tr>
-      <th>Check ID</th>
-      <th>Name</th>
-      <th>Category</th>
-      <th>Status</th>
-      <th>Findings</th>
-      <th>Time (s)</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for result in report.results %}
-    <tr>
-      <td>{{ result.check_id }}</td>
-      <td>{{ result.check_name }}</td>
-      <td>{{ result.category.value }}</td>
-      <td><span class="status status-{{ result.status }}">{{ result.status }}</span></td>
-      <td>{{ result.findings | length }}</td>
-      <td>{{ "%.1f"|format(result.duration_seconds) }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-
-{% if all_findings %}
-<h2>Findings Detail</h2>
-
-{% for finding in all_findings %}
-<div class="finding-detail sev-border-{{ finding.severity.value }}">
-  <h3>
-    <span class="sev sev-{{ finding.severity.value }}">{{ finding.severity.value }}</span>
-    {{ finding.title }}
-  </h3>
-  <div class="finding-field"><strong>Check:</strong> {{ finding.check_id }}</div>
-  <div class="finding-field"><strong>Category:</strong> {{ finding.category.value }}</div>
-  <div class="finding-field"><strong>Affected:</strong> {{ finding.affected_item }}</div>
-  <div class="finding-field"><strong>Description:</strong> {{ finding.description }}</div>
-  <details>
-    <summary>Evidence</summary>
-    <div class="evidence">{{ finding.evidence }}</div>
-  </details>
-  <div class="finding-field"><strong>Recommendation:</strong> {{ finding.recommendation }}</div>
-  {% if finding.references %}
-  <div class="finding-field"><strong>References:</strong> {{ finding.references | join(', ') }}</div>
-  {% endif %}
-  {% if finding.cvss_score is not none %}
-  <div class="finding-field"><strong>CVSS:</strong> {{ finding.cvss_score }} ({{ finding.cvss_vector }})</div>
-  {% endif %}
+  </div>
 </div>
 {% endfor %}
-{% endif %}
 
 {% if report.hardware_fingerprint %}
 <h2>Hardware Fingerprint</h2>
@@ -225,7 +457,7 @@
 {% endif %}
 
 <div style="margin-top: 30px; padding: 15px; background: #ecf0f1; border-radius: 6px; font-size: 0.85em;">
-  Generated by Vitia Invenire v{{ report.report_id[:8] }} |
+  Generated by Vitia Invenire |
   Report ID: {{ report.report_id }} |
   {{ report.scan_start.strftime('%Y-%m-%d %H:%M:%S UTC') }}
 </div>
