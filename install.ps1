@@ -49,7 +49,6 @@ $NmapVersion = "7.92"
 $NmapZipUrl = "https://nmap.org/dist/nmap-$NmapVersion-win32.zip"
 $YaraVersion = "4.5.2"
 $YaraZipUrl = "https://github.com/VirusTotal/yara/releases/download/v$YaraVersion/yara-v$YaraVersion-2326-win64.zip"
-$NsrlZipUrl = "https://s3.amazonaws.com/rds.nsrl.nist.gov/RDS/rds_2025.03.1/RDS_2025.03.1_modern_minimal.zip"
 $PythonDir = Join-Path $InstallDir "python"
 $PythonExe = Join-Path $PythonDir "python.exe"
 $ScriptsDir = Join-Path $PythonDir "Scripts"
@@ -57,7 +56,6 @@ $ToolExe = Join-Path $ScriptsDir "vitia-invenire.exe"
 $ToolsDir = Join-Path $InstallDir "tools"
 $NmapDir = Join-Path $ToolsDir "nmap"
 $YaraDir = Join-Path $ToolsDir "yara"
-$NsrlDir = Join-Path $InstallDir "nsrl"
 
 # ---------------------------------------------------------------------------
 # Banner
@@ -124,7 +122,7 @@ if ($Uninstall) {
 # ---------------------------------------------------------------------------
 
 Write-Banner
-Write-Host "  [1/11] Checking prerequisites ..."
+Write-Host "  [1/10] Checking prerequisites ..."
 
 if (-not (Test-Is64BitWindows)) {
     Write-Error "Vitia Invenire requires 64-bit Windows."
@@ -142,7 +140,7 @@ Write-Host "         TLS 1.2 enforced."
 # ---------------------------------------------------------------------------
 
 Write-Host ""
-Write-Host "  [2/11] Setting up Python $PythonVersion ..."
+Write-Host "  [2/10] Setting up Python $PythonVersion ..."
 
 if (Test-Path $PythonExe) {
     Write-Host "         Python already installed, skipping download."
@@ -178,7 +176,7 @@ if (Test-Path $PythonExe) {
 # ---------------------------------------------------------------------------
 
 Write-Host ""
-Write-Host "  [3/11] Configuring Python for pip ..."
+Write-Host "  [3/10] Configuring Python for pip ..."
 
 $pthPattern = Join-Path $PythonDir "python*._pth"
 $pthFiles = Get-ChildItem -Path $pthPattern -ErrorAction SilentlyContinue
@@ -251,7 +249,7 @@ if (Test-Path $pipExe) {
 # ---------------------------------------------------------------------------
 
 Write-Host ""
-Write-Host "  [4/11] Installing Vitia Invenire ..."
+Write-Host "  [4/10] Installing Vitia Invenire ..."
 
 # Embeddable Python lacks setuptools/wheel -- install them first
 $prevErrorPref = $ErrorActionPreference
@@ -303,7 +301,7 @@ Write-Host "         Installed successfully."
 # ---------------------------------------------------------------------------
 
 Write-Host ""
-Write-Host "  [5/11] Installing Nmap $NmapVersion ..."
+Write-Host "  [5/10] Installing Nmap $NmapVersion ..."
 
 $nmapInstalled = $false
 $nmapExe = Join-Path $NmapDir "nmap.exe"
@@ -373,7 +371,7 @@ if (Test-Path $nmapExe) {
 # ---------------------------------------------------------------------------
 
 Write-Host ""
-Write-Host "  [6/11] Installing YARA $YaraVersion ..."
+Write-Host "  [6/10] Installing YARA $YaraVersion ..."
 
 $yaraInstalled = $false
 $yaraExe = Join-Path $YaraDir "yara64.exe"
@@ -443,107 +441,11 @@ if (Test-Path $yaraExe) {
 }
 
 # ---------------------------------------------------------------------------
-# Download NSRL RDS Modern Minimal (known-good hash database from NIST)
-# ---------------------------------------------------------------------------
-
-Write-Host ""
-Write-Host "  [7/11] Downloading NSRL hash database ..."
-
-$nsrlInstalled = $false
-$nsrlDbFile = Join-Path $NsrlDir "NSRLFile.db"
-
-if (Test-Path $nsrlDbFile) {
-    Write-Host "         NSRL database already present."
-    $nsrlInstalled = $true
-} else {
-    # Also check for any .db file in the nsrl directory
-    if ((Test-Path $NsrlDir) -and (Get-ChildItem -Path $NsrlDir -Filter "*.db" -ErrorAction SilentlyContinue)) {
-        Write-Host "         NSRL database found in nsrl directory."
-        $nsrlInstalled = $true
-    } else {
-        $nsrlZipPath = Join-Path $env:TEMP "nsrl_rds_modern_minimal.zip"
-
-        try {
-            if (-not (Test-Path $NsrlDir)) {
-                New-Item -ItemType Directory -Path $NsrlDir -Force | Out-Null
-            }
-
-            Write-Host "         Downloading NSRL RDS Modern Minimal from NIST ..."
-            Write-Host "         (This is a large file and may take several minutes)"
-
-            # Use BITS transfer for large file with progress, fall back to Invoke-WebRequest
-            try {
-                Import-Module BitsTransfer -ErrorAction Stop
-                Start-BitsTransfer -Source $NsrlZipUrl -Destination $nsrlZipPath -Description "NSRL RDS Modern Minimal"
-            } catch {
-                # BITS not available or failed, fall back to Invoke-WebRequest
-                Write-Host "         BITS transfer unavailable, using web request ..."
-                $ProgressPreference = 'SilentlyContinue'
-                Invoke-WebRequest -Uri $NsrlZipUrl -OutFile $nsrlZipPath -UseBasicParsing
-                $ProgressPreference = 'Continue'
-            }
-
-            if (Test-Path $nsrlZipPath) {
-                $zipSize = (Get-Item $nsrlZipPath).Length
-                Write-Host "         Downloaded $([math]::Round($zipSize / 1MB, 0)) MB. Extracting ..."
-
-                Expand-Archive -Path $nsrlZipPath -DestinationPath $NsrlDir -Force
-                Remove-Item $nsrlZipPath -Force -ErrorAction SilentlyContinue
-
-                # Find the .db file (may be nested or have a different name)
-                $dbFiles = Get-ChildItem -Path $NsrlDir -Filter "*.db" -Recurse -ErrorAction SilentlyContinue
-                if ($dbFiles) {
-                    # If the db is in a subfolder, move it up
-                    foreach ($db in $dbFiles) {
-                        if ($db.DirectoryName -ne $NsrlDir) {
-                            Move-Item -Path $db.FullName -Destination $NsrlDir -Force
-                        }
-                    }
-                    # Rename to standard name if different
-                    $firstDb = Get-ChildItem -Path $NsrlDir -Filter "*.db" | Select-Object -First 1
-                    if ($firstDb -and $firstDb.Name -ne "NSRLFile.db") {
-                        Rename-Item -Path $firstDb.FullName -NewName "NSRLFile.db" -Force -ErrorAction SilentlyContinue
-                    }
-
-                    # Clean up any extracted subdirectories
-                    Get-ChildItem -Path $NsrlDir -Directory | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
-
-                    $finalDb = Join-Path $NsrlDir "NSRLFile.db"
-                    if (Test-Path $finalDb) {
-                        $dbSize = (Get-Item $finalDb).Length
-                        Write-Host "         NSRL database installed ($([math]::Round($dbSize / 1MB, 0)) MB)."
-                        $nsrlInstalled = $true
-                    } else {
-                        # Use whatever .db file exists
-                        $anyDb = Get-ChildItem -Path $NsrlDir -Filter "*.db" | Select-Object -First 1
-                        if ($anyDb) {
-                            Write-Host "         NSRL database installed: $($anyDb.Name)"
-                            $nsrlInstalled = $true
-                        }
-                    }
-                } else {
-                    Write-Host "         WARNING: ZIP extracted but no .db file found."
-                    Write-Host "         HASH-001 NSRL lookups will be unavailable."
-                }
-            }
-        } catch {
-            Write-Host "         WARNING: Failed to download NSRL database: $_"
-            Write-Host "         HASH-001 NSRL lookups will be unavailable."
-            Write-Host "         To download manually:"
-            Write-Host "           1. Visit https://www.nist.gov/itl/ssd/software-quality-group/national-software-reference-library-nsrl/nsrl-download/current-rds"
-            Write-Host "           2. Download RDS Modern Minimal"
-            Write-Host "           3. Extract the .db file to: $NsrlDir"
-            Remove-Item $nsrlZipPath -Force -ErrorAction SilentlyContinue
-        }
-    }
-}
-
-# ---------------------------------------------------------------------------
 # Install HardeningKitty PowerShell module
 # ---------------------------------------------------------------------------
 
 Write-Host ""
-Write-Host "  [8/11] Installing HardeningKitty module ..."
+Write-Host "  [7/10] Installing HardeningKitty module ..."
 
 $hkInstalled = $false
 try {
@@ -619,7 +521,7 @@ if (-not $hkInstalled) {
 # ---------------------------------------------------------------------------
 
 Write-Host ""
-Write-Host "  [9/11] Verifying installation ..."
+Write-Host "  [8/10] Verifying installation ..."
 
 if (Test-Path $ToolExe) {
     Write-Host "         vitia-invenire.exe found."
@@ -640,7 +542,7 @@ if (Test-Path $ToolExe) {
 # ---------------------------------------------------------------------------
 
 Write-Host ""
-Write-Host "  [10/11] Updating session PATH ..."
+Write-Host "  [9/10] Updating session PATH ..."
 
 $pathAdditions = @($ScriptsDir, $PythonDir)
 if ($nmapInstalled -and (Test-Path $NmapDir)) {
@@ -659,7 +561,7 @@ foreach ($dir in $pathAdditions) {
 Write-Host "         PATH updated for this session."
 
 Write-Host ""
-Write-Host "  [11/11] Installation complete."
+Write-Host "  [10/10] Installation complete."
 Write-Host ""
 Write-Host "  Install directory:  $InstallDir"
 if (Test-Path $ToolExe) {
@@ -675,11 +577,6 @@ if ($yaraInstalled) {
     Write-Host "  YARA:               Installed (malware rule scanning enabled)"
 } else {
     Write-Host "  YARA:               Not installed (install manually for YARA-001)"
-}
-if ($nsrlInstalled) {
-    Write-Host "  NSRL Database:      Installed (known-good hash lookups enabled)"
-} else {
-    Write-Host "  NSRL Database:      Not installed (download manually for HASH-001)"
 }
 if ($hkInstalled) {
     Write-Host "  HardeningKitty:     Installed (CIS benchmark auditing enabled)"
