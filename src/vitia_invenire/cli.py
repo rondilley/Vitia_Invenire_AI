@@ -144,9 +144,9 @@ def scan(
 @main.command()
 @click.argument("action", type=click.Choice(["create", "compare"]))
 @click.option("--output", default="baseline.json", help="Output file for baseline (create mode)")
-@click.option("--baseline", default=None, type=click.Path(exists=True), help="Baseline file to compare against")
+@click.option("--baseline", "baseline_path", default=None, type=click.Path(exists=True), help="Baseline file to compare against")
 @click.option("--config", "config_path", default=None, type=click.Path(exists=True), help="Path to config YAML")
-def baseline(action: str, output: str, baseline: str | None, config_path: str | None):
+def baseline(action: str, output: str, baseline_path: str | None, config_path: str | None):
     """Golden image baseline management.
 
     Create a baseline from a trusted reference device, or compare
@@ -168,16 +168,16 @@ def baseline(action: str, output: str, baseline: str | None, config_path: str | 
         console.print(f"Baseline written to: {output}")
 
     elif action == "compare":
-        if not baseline:
+        if not baseline_path:
             console.print("[bold red]ERROR: --baseline path required for compare mode[/bold red]")
             sys.exit(1)
 
         import json
         from vitia_invenire.models import AssessmentReport as AR
 
-        console.print(f"[bold]Comparing against baseline: {baseline}[/bold]")
+        console.print(f"[bold]Comparing against baseline: {baseline_path}[/bold]")
 
-        with open(baseline, encoding="utf-8") as f:
+        with open(baseline_path, encoding="utf-8") as f:
             baseline_data = json.load(f)
         baseline_report = AR.model_validate(baseline_data)
 
