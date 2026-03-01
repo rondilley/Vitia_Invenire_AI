@@ -281,7 +281,7 @@ if ($localSource) {
 
 $prevErrorPref = $ErrorActionPreference
 $ErrorActionPreference = "Continue"
-$pipOutput = & $PythonExe -m pip install $installTarget --upgrade --no-warn-script-location 2>&1
+$pipOutput = & $PythonExe -m pip install $installTarget --force-reinstall --no-cache-dir --no-warn-script-location 2>&1
 $pipExitCode = $LASTEXITCODE
 $ErrorActionPreference = $prevErrorPref
 
