@@ -21,6 +21,18 @@ from vitia_invenire.models import Category, Finding, Severity
 # PIDs that are reported inconsistently across APIs and should be ignored
 _IGNORED_PIDS = {0, 4}
 
+# Process names that are inherently transient during enumeration.
+# These are spawned by this tool or by WMI queries and naturally appear
+# in one source but not others due to timing.
+_TRANSIENT_PROCESS_NAMES = {
+    "powershell", "powershell.exe",
+    "pwsh", "pwsh.exe",
+    "conhost", "conhost.exe",
+    "wmiprvse", "wmiprvse.exe",
+    "wmiapsrv", "wmiapsrv.exe",
+    "csrss", "csrss.exe",
+}
+
 # Win32 service types that indicate actual services (not drivers)
 # 0x10 = Win32OwnProcess, 0x20 = Win32ShareProcess
 _WIN32_SERVICE_TYPES = {16, 32}
@@ -167,13 +179,19 @@ class RootkitDetectionCheck(BaseCheck):
 
             # Flag if present in exactly one source but missing from both others
             if len(sources_present) == 1:
-                hidden_count += 1
                 name = (
                     psutil_procs.get(pid)
                     or ps_procs.get(pid)
                     or wmi_procs.get(pid)
                     or "Unknown"
                 )
+
+                # Skip processes known to be transient during enumeration
+                # (e.g., PowerShell spawned by this tool, WMI provider hosts)
+                if name.lower() in _TRANSIENT_PROCESS_NAMES:
+                    continue
+
+                hidden_count += 1
                 findings.append(Finding(
                     check_id=self.CHECK_ID,
                     title=f"Hidden process detected: PID {pid} ({name})",

@@ -274,13 +274,10 @@ class IntegrityCheck(BaseCheck):
                 f"if (Test-Path '{file_path}') {{ "
                 f"$hash = Get-FileHash -Path '{file_path}' -Algorithm SHA256; "
                 f"$sig = Get-AuthenticodeSignature -FilePath '{file_path}'; "
-                "@{ "
-                "Path=$hash.Path; "
-                "SHA256=$hash.Hash; "
-                "SignatureStatus=$sig.Status.ToString(); "
-                "Signer=if($sig.SignerCertificate){$sig.SignerCertificate.Subject}else{''}; "
-                "TimeStamper=if($sig.TimeStamperCertificate){$sig.TimeStamperCertificate.Subject}else{''} "
-                "} } else { "
+                "$sn = if($sig.SignerCertificate){$sig.SignerCertificate.Subject}else{''}; "
+                "$ts = if($sig.TimeStamperCertificate){$sig.TimeStamperCertificate.Subject}else{''}; "
+                "@{ Path=$hash.Path; SHA256=$hash.Hash; SignatureStatus=$sig.Status.ToString(); Signer=$sn; TimeStamper=$ts } "
+                "} else { "
                 f"@{{ Path='{file_path}'; SHA256='FILE_NOT_FOUND'; SignatureStatus='NotFound'; Signer=''; TimeStamper='' }} "
                 "}",
                 timeout=30,

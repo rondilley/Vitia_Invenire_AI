@@ -45,11 +45,11 @@ $PythonVersion = "3.13.2"
 $PythonZipUrl = "https://www.python.org/ftp/python/$PythonVersion/python-$PythonVersion-embed-amd64.zip"
 $GetPipUrl = "https://bootstrap.pypa.io/get-pip.py"
 $GitHubArchiveUrl = "https://github.com/rondilley/Vitia_Invenire_AI/archive/refs/heads/main.zip"
-$NmapVersion = "7.95"
+$NmapVersion = "7.92"
 $NmapZipUrl = "https://nmap.org/dist/nmap-$NmapVersion-win32.zip"
 $YaraVersion = "4.5.2"
 $YaraZipUrl = "https://github.com/VirusTotal/yara/releases/download/v$YaraVersion/yara-v$YaraVersion-2326-win64.zip"
-$NsrlZipUrl = "https://s3.amazonaws.com/rds.nsrl.nist.gov/RDS/current/RDS_modern_minimal.db.zip"
+$NsrlZipUrl = "https://s3.amazonaws.com/rds.nsrl.nist.gov/RDS/rds_2025.03.1/RDS_2025.03.1_modern_minimal.zip"
 $PythonDir = Join-Path $InstallDir "python"
 $PythonExe = Join-Path $PythonDir "python.exe"
 $ScriptsDir = Join-Path $PythonDir "Scripts"
@@ -557,22 +557,60 @@ try {
 }
 
 if (-not $hkInstalled) {
+    # Try PSGallery first, then fall back to direct GitHub download
     try {
         # Ensure NuGet provider is available for Install-Module
         $nuget = Get-PackageProvider -Name NuGet -ErrorAction SilentlyContinue
         if (-not $nuget -or $nuget.Version -lt [Version]"2.8.5.201") {
             Write-Host "         Installing NuGet package provider ..."
-            Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Scope CurrentUser | Out-Null
+            Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force -Scope CurrentUser -Confirm:$false | Out-Null
+        }
+
+        # Ensure PSGallery is trusted to avoid interactive prompts
+        $repo = Get-PSRepository -Name PSGallery -ErrorAction SilentlyContinue
+        if ($repo -and $repo.InstallationPolicy -ne "Trusted") {
+            Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
         }
 
         Write-Host "         Installing HardeningKitty from PSGallery ..."
-        Install-Module -Name HardeningKitty -Scope CurrentUser -Force -AllowClobber -ErrorAction Stop
+        Install-Module -Name HardeningKitty -Scope CurrentUser -Force -AllowClobber -Confirm:$false -ErrorAction Stop
         Write-Host "         HardeningKitty installed."
         $hkInstalled = $true
     } catch {
-        Write-Host "         WARNING: Failed to install HardeningKitty: $_"
-        Write-Host "         The HK-001 check will be skipped during scans."
-        Write-Host "         To install manually: Install-Module -Name HardeningKitty -Scope CurrentUser"
+        Write-Host "         PSGallery install failed, trying GitHub download ..."
+        try {
+            $hkUrl = "https://github.com/scipag/HardeningKitty/archive/refs/heads/master.zip"
+            $hkZip = Join-Path $env:TEMP "HardeningKitty.zip"
+            $hkModBase = Join-Path ([Environment]::GetFolderPath("MyDocuments")) "WindowsPowerShell\Modules\HardeningKitty"
+
+            $ProgressPreference = "SilentlyContinue"
+            Invoke-WebRequest -Uri $hkUrl -OutFile $hkZip -UseBasicParsing
+            $ProgressPreference = "Continue"
+
+            $hkTmpDir = Join-Path $env:TEMP "hk-extract"
+            if (Test-Path $hkTmpDir) { Remove-Item $hkTmpDir -Recurse -Force }
+            Expand-Archive -Path $hkZip -DestinationPath $hkTmpDir -Force
+            Remove-Item $hkZip -Force -ErrorAction SilentlyContinue
+
+            if (Test-Path $hkModBase) { Remove-Item $hkModBase -Recurse -Force }
+            $hkInner = Get-ChildItem $hkTmpDir -Directory | Select-Object -First 1
+            if ($hkInner) {
+                New-Item -ItemType Directory -Path (Split-Path $hkModBase) -Force | Out-Null
+                Move-Item $hkInner.FullName -Destination $hkModBase -Force
+            }
+            Remove-Item $hkTmpDir -Recurse -Force -ErrorAction SilentlyContinue
+
+            if (Test-Path (Join-Path $hkModBase "HardeningKitty.psm1")) {
+                Write-Host "         HardeningKitty installed from GitHub."
+                $hkInstalled = $true
+            } else {
+                Write-Host "         WARNING: GitHub download succeeded but module files not found."
+            }
+        } catch {
+            Write-Host "         WARNING: Failed to install HardeningKitty: $_"
+            Write-Host "         The HK-001 check will be skipped during scans."
+            Write-Host "         To install manually: Install-Module -Name HardeningKitty -Scope CurrentUser"
+        }
     }
 }
 
