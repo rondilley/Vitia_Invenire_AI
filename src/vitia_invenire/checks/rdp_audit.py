@@ -47,6 +47,7 @@ class RDPAuditCheck(BaseCheck):
 
     def run(self) -> list[Finding]:
         findings: list[Finding] = []
+        self.context["state"] = {"config": [], "connections": []}
 
         # Check fDenyTSConnections (0 = RDP enabled, 1 = RDP disabled)
         deny_val = registry.read_value(
@@ -90,6 +91,8 @@ class RDPAuditCheck(BaseCheck):
             # ProductType: 1 = Workstation, 2 = Domain Controller, 3 = Server
             is_workstation = product_type == "1"
             rdp_evidence_parts.append(f"ProductType: {product_type}")
+
+        self.context["state"]["config"].append({"name": "rdp_enabled", "value": str(rdp_enabled)})
 
         if rdp_enabled:
             severity = Severity.MEDIUM if is_workstation else Severity.INFO
@@ -145,6 +148,16 @@ class RDPAuditCheck(BaseCheck):
             registry.HKEY_LOCAL_MACHINE, _RDP_SECURITY_LAYER_PATH,
             "MinEncryptionLevel",
         )
+
+        self.context["state"]["config"].append({
+            "name": "nla_enabled",
+            "value": str(nla_val.data == 1 if nla_val is not None else True),
+        })
+        if sec_layer_val is not None:
+            self.context["state"]["config"].append({
+                "name": "security_layer",
+                "value": str(sec_layer_val.data),
+            })
 
         nla_enabled = True  # Default assumption
         nla_evidence_parts: list[str] = []
@@ -248,6 +261,13 @@ class RDPAuditCheck(BaseCheck):
                 "source": "Servers",
                 "server": server_name,
                 "username_hint": str(username_val.data) if username_val else "Unknown",
+            })
+
+        for entry in connection_history:
+            self.context["state"]["connections"].append({
+                "name": entry.get("server", ""),
+                "username_hint": entry.get("username_hint", ""),
+                "source": entry.get("source", ""),
             })
 
         if connection_history:

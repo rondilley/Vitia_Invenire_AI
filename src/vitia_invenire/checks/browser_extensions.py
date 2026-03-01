@@ -396,6 +396,18 @@ class BrowserExtensionAuditCheck(BaseCheck):
             all_extensions.extend(firefox_exts)
             browser_counts["Firefox"] += len(firefox_exts)
 
+        # Capture full extension state for baseline comparison
+        self.context["state"] = [
+            {
+                "browser": ext["browser"],
+                "extension_id": ext["extension_id"],
+                "name": ext["name"],
+                "version": ext.get("version", ""),
+                "user_profile": os.path.basename(ext.get("user_profile", "")),
+            }
+            for ext in all_extensions
+        ]
+
         # Analyze each extension
         malicious_count = 0
         sideloaded_count = 0

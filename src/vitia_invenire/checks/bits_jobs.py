@@ -156,6 +156,20 @@ class BITSJobsCheck(BaseCheck):
         if isinstance(jobs, dict):
             jobs = [jobs]
 
+        # Capture full BITS job state for baseline comparison
+        self.context["state"] = [
+            {
+                "job_id": str(j.get("JobId", "")),
+                "display_name": str(j.get("DisplayName", "")),
+                "transfer_type": str(j.get("TransferType", "")),
+                "job_state": str(j.get("JobState", "")),
+                "owner_account": str(j.get("OwnerAccount", "")),
+                "remote_urls": str(j.get("RemoteNames", "")),
+                "notify_cmd": str(j.get("NotifyCmdLine", "")),
+            }
+            for j in jobs
+        ]
+
         suspicious_notify_jobs: list[dict] = []
         non_ms_download_jobs: list[dict] = []
         all_job_details: list[str] = []

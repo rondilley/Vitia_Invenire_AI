@@ -208,6 +208,11 @@ def get_system_info() -> object | None:
     return info
 
 
+def get_own_exe_path() -> str:
+    """Return the resolved absolute path of the currently running Python executable."""
+    return os.path.realpath(sys.executable)
+
+
 def get_powershell_path() -> str | None:
     """Return path to PowerShell executable, or None if not found.
 

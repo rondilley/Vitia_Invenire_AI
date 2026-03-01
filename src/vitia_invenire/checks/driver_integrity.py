@@ -87,6 +87,7 @@ class DriverIntegrityCheck(BaseCheck):
         unsigned_drivers: list[str] = []
         invalid_drivers: list[str] = []
         signed_count = 0
+        driver_state: list[dict[str, str]] = []
 
         for batch_start in range(0, len(paths_list), batch_size):
             batch = paths_list[batch_start:batch_start + batch_size]
@@ -137,6 +138,13 @@ class DriverIntegrityCheck(BaseCheck):
 
                 if status == "FileNotFound":
                     continue
+
+                driver_state.append({
+                    "path": path,
+                    "display_name": driver_name,
+                    "status": status,
+                    "signer": signer,
+                })
 
                 if status == "NotSigned":
                     unsigned_drivers.append(path)
@@ -197,6 +205,9 @@ class DriverIntegrityCheck(BaseCheck):
                     ))
                 elif status == "Valid":
                     signed_count += 1
+
+        # Capture full driver state for baseline comparison
+        self.context["state"] = driver_state
 
         # Summary finding
         total = len(driver_map)

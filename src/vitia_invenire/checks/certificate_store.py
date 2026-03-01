@@ -92,6 +92,18 @@ class CertificateStoreCheck(BaseCheck):
         if isinstance(certs, dict):
             certs = [certs]
 
+        # Capture full certificate state for baseline comparison
+        self.context["state"] = [
+            {
+                "thumbprint": str(c.get("Thumbprint", "")).upper().strip(),
+                "subject": str(c.get("Subject", "")),
+                "algorithm": str(c.get("Algorithm", "")),
+                "key_length": c.get("KeyLength"),
+                "not_after": str(c.get("NotAfter", "")),
+            }
+            for c in certs
+        ]
+
         total_certs = len(certs)
         unknown_count = 0
         bad_count = 0

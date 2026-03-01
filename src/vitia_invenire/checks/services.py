@@ -129,6 +129,19 @@ class ServicesCheck(BaseCheck):
             ))
             return findings
 
+        # Capture full service state for baseline comparison
+        self.context["state"] = [
+            {
+                "name": str(svc.get("Name", "")),
+                "display_name": str(svc.get("DisplayName", "")),
+                "pathname": str(svc.get("PathName", "")),
+                "state": str(svc.get("State", "")),
+                "start_mode": str(svc.get("StartMode", "")),
+                "start_name": str(svc.get("StartName", "")),
+            }
+            for svc in service_rows
+        ]
+
         suspicious_path_count = 0
         unquoted_count = 0
         system_nonstandard_count = 0
@@ -150,6 +163,9 @@ class ServicesCheck(BaseCheck):
             # Check for services in suspicious directories (TEMP, APPDATA, etc.)
             for sus_dir in _SUSPICIOUS_DIRS:
                 if sus_dir in upper_path:
+                    # Skip the tool's own install directory
+                    if "\\VITIAINVENIRE\\" in upper_path:
+                        break
                     suspicious_path_count += 1
                     findings.append(Finding(
                         check_id=self.CHECK_ID,

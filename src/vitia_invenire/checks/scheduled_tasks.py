@@ -99,6 +99,27 @@ class ScheduledTasksCheck(BaseCheck):
         if isinstance(tasks, dict):
             tasks = [tasks]
 
+        # Capture full task state for baseline comparison
+        self.context["state"] = []
+        for task in tasks:
+            actions = task.get("Actions", [])
+            if actions is None:
+                actions = []
+            if isinstance(actions, dict):
+                actions = [actions]
+            action_strs = [
+                str(a.get("Execute", "")) + (" " + str(a.get("Arguments", "")) if a.get("Arguments") else "")
+                for a in actions
+            ]
+            self.context["state"].append({
+                "task_path": str(task.get("TaskPath", "")),
+                "task_name": str(task.get("TaskName", "")),
+                "state": str(task.get("State", "")),
+                "author": str(task.get("Author", "")),
+                "actions": "; ".join(action_strs),
+                "date": str(task.get("Date", "")),
+            })
+
         total_tasks = len(tasks)
         suspicious_count = 0
         non_ms_network_count = 0

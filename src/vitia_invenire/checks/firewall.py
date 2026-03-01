@@ -27,6 +27,7 @@ class FirewallCheck(BaseCheck):
 
     def run(self) -> list[Finding]:
         findings: list[Finding] = []
+        self.context["state"] = []
 
         # Get firewall profile status first
         self._check_firewall_profiles(findings)
@@ -73,6 +74,20 @@ class FirewallCheck(BaseCheck):
         rules = result.json_output
         if isinstance(rules, dict):
             rules = [rules]
+
+        # Capture full rule state for baseline comparison
+        self.context["state"] = [
+            {
+                "name": str(r.get("Name", "")),
+                "display_name": str(r.get("DisplayName", r.get("Name", ""))),
+                "profile": str(r.get("Profile", "")),
+                "protocol": str(r.get("Protocol", "")),
+                "local_port": str(r.get("LocalPort", "")),
+                "remote_address": str(r.get("RemoteAddress", "")),
+                "program": str(r.get("Program", "")),
+            }
+            for r in rules
+        ]
 
         total_rules = len(rules)
         all_profiles_count = 0

@@ -89,6 +89,7 @@ class COMHijackingCheck(BaseCheck):
         suspicious_path_entries: list[dict[str, str]] = []
         known_hijack_entries: list[dict[str, str]] = []
         general_override_entries: list[dict[str, str]] = []
+        all_clsid_entries: list[dict[str, str]] = []
 
         for clsid in hkcu_clsids:
             # Read InprocServer32 or LocalServer32 from the user CLSID
@@ -143,6 +144,8 @@ class COMHijackingCheck(BaseCheck):
                 "is_override": str(is_override),
             }
 
+            all_clsid_entries.append(entry_info)
+
             # Check if the path points to a suspicious location
             normalized_path = user_dll_path.lower()
             path_is_suspicious = any(
@@ -170,6 +173,9 @@ class COMHijackingCheck(BaseCheck):
                 suspicious_path_entries.append(entry_info)
             elif is_override:
                 general_override_entries.append(entry_info)
+
+        # Capture full CLSID state for baseline comparison
+        self.context["state"] = all_clsid_entries
 
         # Report known hijacked CLSIDs
         if known_hijack_entries:

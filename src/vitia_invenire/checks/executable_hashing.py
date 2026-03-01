@@ -138,6 +138,7 @@ class ExecutableHashingCheck(BaseCheck):
         errors: list[dict] = []
         extension_counts: dict[str, int] = {}
         dir_counts: dict[str, int] = {}
+        file_hashes: list[dict[str, str]] = []
 
         with ThreadPoolExecutor(max_workers=max_threads) as executor:
             future_map = {
@@ -153,6 +154,7 @@ class ExecutableHashingCheck(BaseCheck):
                 else:
                     hashed_count += 1
                     total_bytes += file_size
+                    file_hashes.append({"path": file_path, "sha256": sha256_hex})
 
                 # Count by extension
                 ext = Path(file_path).suffix.lower()
@@ -175,6 +177,7 @@ class ExecutableHashingCheck(BaseCheck):
             "throughput_mb_s": round(throughput_mb, 1),
             "by_extension": dict(sorted(extension_counts.items(), key=lambda x: -x[1])),
             "by_directory": dict(sorted(dir_counts.items(), key=lambda x: -x[1])),
+            "state": sorted(file_hashes, key=lambda h: h["path"]),
         }
 
         # Build evidence summary

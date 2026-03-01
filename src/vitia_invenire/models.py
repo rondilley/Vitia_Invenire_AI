@@ -88,7 +88,7 @@ class CheckResult(BaseModel):
     check_id: str
     check_name: str
     category: Category
-    status: str  # "passed", "failed", "error", "skipped"
+    status: str  # "passed", "medium", "high", "critical", "error", "skipped"
     duration_seconds: float = 0.0
     findings: list[Finding] = Field(default_factory=list)
     context: dict = Field(default_factory=dict)

@@ -94,6 +94,17 @@ class SoftwareInventoryCheck(BaseCheck):
                         remote_access_found.append((tool_name, tool_desc, sw_info))
                         break
 
+        # Capture full software state for baseline comparison
+        self.context["state"] = [
+            {
+                "name": sw.get("DisplayName", ""),
+                "version": sw.get("DisplayVersion", ""),
+                "publisher": sw.get("Publisher", ""),
+                "install_date": sw.get("InstallDate", ""),
+            }
+            for sw in all_software
+        ]
+
         # Report remote access tools
         for tool_name, tool_desc, sw_info in remote_access_found:
             display_name = sw_info.get("DisplayName", "Unknown")

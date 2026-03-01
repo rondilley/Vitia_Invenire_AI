@@ -5,7 +5,7 @@ from __future__ import annotations
 import time
 from abc import ABC, abstractmethod
 
-from vitia_invenire.models import Category, CheckResult, Finding
+from vitia_invenire.models import Category, CheckResult, Finding, Severity
 from vitia_invenire.platform import has_tool, is_admin, is_windows
 
 
@@ -77,7 +77,24 @@ class BaseCheck(ABC):
         try:
             findings = self.run()
             duration = time.monotonic() - start_time
-            status = "passed" if not findings else "failed"
+            severity_scores = {
+                Severity.MEDIUM: 2,
+                Severity.HIGH: 3,
+                Severity.CRITICAL: 4,
+            }
+            actionable = [
+                f for f in findings if f.severity in severity_scores
+            ]
+            if not actionable:
+                status = "passed"
+            else:
+                avg = sum(severity_scores[f.severity] for f in actionable) / len(actionable)
+                if avg < 2.5:
+                    status = "medium"
+                elif avg < 3.5:
+                    status = "high"
+                else:
+                    status = "critical"
             return CheckResult(
                 check_id=self.CHECK_ID,
                 check_name=self.NAME,

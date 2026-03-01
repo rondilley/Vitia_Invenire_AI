@@ -92,6 +92,11 @@ class OpenSSHAuditCheck(BaseCheck):
 
     def run(self) -> list[Finding]:
         findings: list[Finding] = []
+        self.context["state"] = {
+            "service": [],
+            "config": [],
+            "authorized_keys": [],
+        }
 
         # Check sshd service status
         svc_result = run_ps(
@@ -114,6 +119,12 @@ class OpenSSHAuditCheck(BaseCheck):
 
             # PowerShell Status enum: 1=Stopped, 4=Running
             sshd_running = status in ("running", "4")
+
+            self.context["state"]["service"].append({
+                "name": "sshd",
+                "status": "Running" if sshd_running else "Stopped",
+                "start_type": start_type,
+            })
 
             severity = Severity.MEDIUM if sshd_running else Severity.INFO
             findings.append(Finding(
@@ -180,6 +191,11 @@ class OpenSSHAuditCheck(BaseCheck):
 
         if config_content:
             parsed_config = _parse_sshd_config(config_content)
+            for k, v in parsed_config.items():
+                self.context["state"]["config"].append({
+                    "name": k,
+                    "value": v,
+                })
             dangerous_found: list[dict[str, str]] = []
 
             for setting_key, setting_info in _DANGEROUS_SETTINGS.items():
@@ -284,6 +300,13 @@ class OpenSSHAuditCheck(BaseCheck):
                     auth_keys_entries.append(data)
                 elif isinstance(data, list):
                     auth_keys_entries.extend(data)
+
+        for entry in auth_keys_entries:
+            self.context["state"]["authorized_keys"].append({
+                "name": str(entry.get("User", "")),
+                "path": str(entry.get("Path", "")),
+                "key_count": entry.get("KeyCount", 0),
+            })
 
         if auth_keys_entries:
             evidence_lines = []

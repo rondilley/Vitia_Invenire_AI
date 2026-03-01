@@ -59,8 +59,10 @@ def generate(report: AssessmentReport, output_dir: str) -> str:
 
     status_styles = {
         "passed": "green",
-        "failed": "red",
-        "error": "bold red",
+        "medium": "yellow",
+        "high": "red",
+        "critical": "bold red",
+        "error": "bold magenta",
         "skipped": "dim",
     }
 

@@ -24,6 +24,33 @@ powershell -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.c
 
 This downloads a standalone Python, installs Vitia Invenire, and runs a scan. No admin privileges required. Everything installs to `%LOCALAPPDATA%\VitiaInvenire` with no persistent system changes.
 
+### Golden Image Baseline
+
+To install the tool and immediately capture a golden image baseline from a trusted reference device:
+
+```powershell
+powershell -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/rondilley/Vitia_Invenire_AI/main/golden_image.ps1 | iex"
+```
+
+This installs Vitia Invenire (via install.ps1) and runs `baseline create` to capture the trusted reference state. The baseline is saved to `%LOCALAPPDATA%\VitiaInvenire\golden_image.json` by default.
+
+```powershell
+# Custom output path:
+.\golden_image.ps1 -Output D:\baselines\laptop_model_x.json
+
+# Skip install (tool already installed):
+.\golden_image.ps1 -SkipInstall -Output .\golden.json
+
+# With custom config (e.g., limit check categories):
+.\golden_image.ps1 -ConfigPath .\my_config.yaml
+```
+
+Then compare other devices against the baseline:
+
+```powershell
+vitia-invenire baseline compare --baseline D:\baselines\laptop_model_x.json
+```
+
 ### USB / Offline Install
 
 Copy the repository to a USB drive. On the target machine, open PowerShell in the repo directory:
@@ -32,7 +59,7 @@ Copy the repository to a USB drive. On the target machine, open PowerShell in th
 .\install.ps1
 ```
 
-The installer detects the local source automatically -- no internet needed.
+The installer detects the local source automatically -- no internet needed. The `golden_image.ps1` script also works offline when run from a local copy.
 
 ### Options
 

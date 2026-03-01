@@ -45,6 +45,7 @@ class FileIntegrityCheck(BaseCheck):
 
     def run(self) -> list[Finding]:
         findings: list[Finding] = []
+        self.context["state"] = []
 
         self._run_sfc_verify(findings)
         self._run_dism_checkhealth(findings)
@@ -260,6 +261,16 @@ class FileIntegrityCheck(BaseCheck):
             sig_status = str(data.get("Status", "Unknown"))
             signer = str(data.get("Signer", ""))
             issuer = str(data.get("Issuer", ""))
+
+            # Capture kernel binary state for baseline comparison
+            self.context["state"].append({
+                "filename": filename,
+                "path": file_path,
+                "exists": exists,
+                "sha256": sha256,
+                "signature_status": sig_status,
+                "signer": signer,
+            })
 
             evidence_text = (
                 f"File: {file_path}\n"

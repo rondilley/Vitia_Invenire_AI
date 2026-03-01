@@ -45,7 +45,7 @@ class TestCategory:
             "Hardware", "Firmware", "Binary Integrity", "OEM Pre-Installation",
             "Certificates", "Persistence", "Network", "Drivers", "Services",
             "Accounts", "Configuration", "Malware", "Hardening", "Defense Evasion",
-            "Remote Access", "Meta",
+            "Remote Access", "Patch Management", "Security Policy", "Meta",
         }
         actual = {cat.value for cat in Category}
         assert actual == expected
@@ -98,7 +98,7 @@ class TestCheckResult:
         assert result.error_message is None
 
     def test_check_result_failed_with_findings(self, sample_check_result):
-        assert sample_check_result.status == "failed"
+        assert sample_check_result.status == "high"
         assert len(sample_check_result.findings) == 1
 
     def test_check_result_skipped(self):
@@ -209,7 +209,7 @@ class TestAssessmentReport:
             check_id="CRIT-001",
             check_name="Critical Check",
             category=Category.CERTIFICATES,
-            status="failed",
+            status="critical",
             findings=[critical_finding],
         )
         report = AssessmentReport(

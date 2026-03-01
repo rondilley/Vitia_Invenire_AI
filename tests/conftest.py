@@ -53,7 +53,7 @@ def sample_check_result(sample_finding: Finding) -> CheckResult:
         check_id="TEST-001",
         check_name="Test Check",
         category=Category.CONFIGURATION,
-        status="failed",
+        status="high",
         duration_seconds=1.5,
         findings=[sample_finding],
     )

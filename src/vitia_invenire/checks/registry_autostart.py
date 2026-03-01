@@ -55,6 +55,7 @@ _LEGITIMATE_SUBPATHS: list[str] = [
     "\\WINDOWS\\",
     "\\WINDOWSAPPS\\",
     "\\PACKAGES\\",
+    "\\VITIAINVENIRE\\",
 ]
 
 # LOLBins (Living-off-the-Land Binaries) commonly used for persistence
@@ -102,6 +103,7 @@ class RegistryAutostartCheck(BaseCheck):
 
     def run(self) -> list[Finding]:
         findings: list[Finding] = []
+        self.context["state"] = []
 
         self._check_autostart_keys(findings)
         self._check_winlogon(findings)
@@ -123,6 +125,13 @@ class RegistryAutostartCheck(BaseCheck):
                 total_entries += 1
                 entry_name = val.name
                 entry_data = str(val.data)
+
+                # Capture for baseline state
+                self.context["state"].append({
+                    "key": key_label,
+                    "name": entry_name,
+                    "data": entry_data,
+                })
                 upper_data = entry_data.upper()
 
                 is_suspicious = False
@@ -203,6 +212,16 @@ class RegistryAutostartCheck(BaseCheck):
     def _check_winlogon(self, findings: list[Finding]) -> None:
         """Check Winlogon Shell and Userinit values for hijacking."""
         for hive, path, key_label in _WINLOGON_KEYS:
+            # Capture Winlogon values for baseline state
+            for wl_val_name in ("Shell", "Userinit"):
+                wl_val = registry.read_value(hive, path, wl_val_name)
+                if wl_val is not None:
+                    self.context["state"].append({
+                        "key": key_label,
+                        "name": wl_val_name,
+                        "data": str(wl_val.data).strip(),
+                    })
+
             # Check Shell value
             shell_val = registry.read_value(hive, path, "Shell")
             if shell_val is not None:

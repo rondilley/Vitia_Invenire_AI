@@ -36,6 +36,7 @@ _LEGITIMATE_PATHS = [
     "\\windows\\",
     "\\windowsapps\\",
     "\\packages\\",
+    "\\vitiainvenire\\",
 ]
 
 # Read buffer size for hashing
@@ -119,6 +120,15 @@ class ProcessIntegrityCheck(BaseCheck):
         all_process_summary: list[dict] = []
         hashed_exes: dict[str, str] = {}
 
+        # Identify the tool's own process and its direct children so we can
+        # exclude them from state capture (they pollute baseline comparisons).
+        own_pid = os.getpid()
+        own_child_pids: set[int] = set()
+        for proc_info in processes:
+            if proc_info.get("ppid") == own_pid:
+                own_child_pids.add(proc_info.get("pid", -1))
+        tool_pids = {own_pid} | own_child_pids
+
         for proc in processes:
             pid = proc.get("pid", 0)
             name = proc.get("name", "Unknown")
@@ -167,6 +177,22 @@ class ProcessIntegrityCheck(BaseCheck):
                 suspicious_path_processes.append(entry)
 
             all_process_summary.append(entry)
+
+        # Capture unique executable state for baseline comparison.
+        # Exclude the tool's own process and its children to keep baselines clean.
+        unique_exes: dict[str, dict] = {}
+        for p in all_process_summary:
+            if p.get("pid") in tool_pids:
+                continue
+            exe = p.get("exe", "N/A")
+            if exe and exe != "N/A" and exe not in unique_exes:
+                unique_exes[exe] = {
+                    "exe": exe,
+                    "name": p.get("name", ""),
+                    "sha256": p.get("sha256", ""),
+                    "username": p.get("username", ""),
+                }
+        self.context["state"] = list(unique_exes.values())
 
         # Report processes with no executable path
         if no_path_processes:

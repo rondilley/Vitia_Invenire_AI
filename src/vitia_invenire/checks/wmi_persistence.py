@@ -49,6 +49,34 @@ class WmiPersistenceCheck(BaseCheck):
         consumers = self._query_event_consumers(findings)
         bindings = self._query_bindings(findings)
 
+        # Capture full WMI subscription state for baseline comparison
+        self.context["state"] = {
+            "filters": [
+                {
+                    "name": str(f.get("Name", "")),
+                    "query": str(f.get("Query", "")),
+                    "query_language": str(f.get("QueryLanguage", "")),
+                }
+                for f in filters
+            ],
+            "consumers": [
+                {
+                    "name": str(c.get("Name", "")),
+                    "type": str(c.get("_consumer_type", "")),
+                    "command": str(c.get("CommandLineTemplate", c.get("ScriptText", "")))[:500],
+                }
+                for c in consumers
+            ],
+            "bindings": [
+                {
+                    "name": f"{b.get('FilterName', '')} -> {b.get('ConsumerName', '')}",
+                    "filter": str(b.get("FilterName", "")),
+                    "consumer": str(b.get("ConsumerName", "")),
+                }
+                for b in bindings
+            ],
+        }
+
         if filters or consumers or bindings:
             self._correlate_findings(findings, filters, consumers, bindings)
 

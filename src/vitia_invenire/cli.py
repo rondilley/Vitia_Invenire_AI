@@ -146,7 +146,7 @@ def scan(
 @click.option("--output", default="baseline.json", help="Output file for baseline (create mode)")
 @click.option("--baseline", default=None, type=click.Path(exists=True), help="Baseline file to compare against")
 @click.option("--config", "config_path", default=None, type=click.Path(exists=True), help="Path to config YAML")
-def baseline(action: str, output: str, baseline_path: str | None, config_path: str | None):
+def baseline(action: str, output: str, baseline: str | None, config_path: str | None):
     """Golden image baseline management.
 
     Create a baseline from a trusted reference device, or compare
@@ -168,16 +168,16 @@ def baseline(action: str, output: str, baseline_path: str | None, config_path: s
         console.print(f"Baseline written to: {output}")
 
     elif action == "compare":
-        if not baseline_path:
+        if not baseline:
             console.print("[bold red]ERROR: --baseline path required for compare mode[/bold red]")
             sys.exit(1)
 
         import json
         from vitia_invenire.models import AssessmentReport as AR
 
-        console.print(f"[bold]Comparing against baseline: {baseline_path}[/bold]")
+        console.print(f"[bold]Comparing against baseline: {baseline}[/bold]")
 
-        with open(baseline_path, encoding="utf-8") as f:
+        with open(baseline, encoding="utf-8") as f:
             baseline_data = json.load(f)
         baseline_report = AR.model_validate(baseline_data)
 
@@ -188,23 +188,21 @@ def baseline(action: str, output: str, baseline_path: str | None, config_path: s
         _compare_reports(baseline_report, current_report)
 
 
-def _compare_reports(baseline: "AssessmentReport", current: "AssessmentReport"):
-    """Compare two reports and display differences."""
-    from vitia_invenire.models import AssessmentReport  # noqa: F811
-
+def _compare_reports(baseline_report: "AssessmentReport", current_report: "AssessmentReport"):
+    """Compare two reports and display differences with deep state diffing."""
     con = Console()
     con.print()
     con.print("[bold]Baseline Comparison Results[/bold]")
-    con.print(f"  Baseline host: {baseline.hostname}")
-    con.print(f"  Current host:  {current.hostname}")
+    con.print(f"  Baseline host: {baseline_report.hostname}")
+    con.print(f"  Current host:  {current_report.hostname}")
     con.print()
 
     differences = 0
 
     # Compare hardware fingerprints
-    if baseline.hardware_fingerprint and current.hardware_fingerprint:
-        bf = baseline.hardware_fingerprint
-        cf = current.hardware_fingerprint
+    if baseline_report.hardware_fingerprint and current_report.hardware_fingerprint:
+        bf = baseline_report.hardware_fingerprint
+        cf = current_report.hardware_fingerprint
         hw_fields = [
             ("System Manufacturer", bf.system_manufacturer, cf.system_manufacturer),
             ("System Model", bf.system_model, cf.system_model),
@@ -220,10 +218,10 @@ def _compare_reports(baseline: "AssessmentReport", current: "AssessmentReport"):
                 differences += 1
 
         # Component count differences
-        baseline_types = {}
+        baseline_types: dict[str, list] = {}
         for comp in bf.components:
             baseline_types.setdefault(comp.component_type, []).append(comp)
-        current_types = {}
+        current_types: dict[str, list] = {}
         for comp in cf.components:
             current_types.setdefault(comp.component_type, []).append(comp)
 
@@ -235,29 +233,219 @@ def _compare_reports(baseline: "AssessmentReport", current: "AssessmentReport"):
                 con.print(f"  [yellow]DIFF[/yellow] {ctype} count: baseline={b_count}, current={c_count}")
                 differences += 1
 
-    # Compare check results
-    baseline_checks = {r.check_id: r for r in baseline.results}
-    current_checks = {r.check_id: r for r in current.results}
+    # Per-check key fields for state diffing.
+    # Maps check_id -> (context_key, identity_field_or_tuple).
+    # For ACCT-001, special handling is used since state is a dict with two sub-lists.
+    _STATE_KEYS: dict[str, tuple[str, str | tuple[str, ...]]] = {
+        "SVC-001": ("state", "name"),
+        "TASK-001": ("state", "task_path"),
+        "DRV-001": ("state", "path"),
+        "CERT-001": ("state", "thumbprint"),
+        "FW-RULE-001": ("state", "name"),
+        "SOFT-001": ("state", "name"),
+        "REG-001": ("state", ("key", "name")),
+        "PROC-001": ("state", "exe"),
+        "COM-001": ("state", "clsid"),
+        "EXT-001": ("state", ("browser", "extension_id")),
+        "BITS-001": ("state", "job_id"),
+        "FILE-001": ("state", "filename"),
+        "BIN-001": ("state", "path"),
+        "NET-PROC-001": ("listeners", "address"),
+    }
 
-    for check_id, current_result in current_checks.items():
+    # Checks with dict-of-sub-lists state (like ACCT-001).
+    # Maps check_id -> list of (sub_key, id_field, label).
+    _MULTI_STATE_KEYS: dict[str, list[tuple[str, str, str]]] = {
+        "ACCT-001": [
+            ("users", "name", "users"),
+            ("admin_members", "name", "admin members"),
+        ],
+        "WMI-001": [
+            ("filters", "name", "WMI filters"),
+            ("consumers", "name", "WMI consumers"),
+            ("bindings", "name", "WMI bindings"),
+        ],
+        "SSH-001": [
+            ("service", "name", "SSH service"),
+            ("config", "name", "SSH config"),
+            ("authorized_keys", "name", "authorized keys"),
+        ],
+        "RDP-001": [
+            ("config", "name", "RDP config"),
+            ("connections", "name", "RDP connections"),
+        ],
+    }
+
+    baseline_checks = {r.check_id: r for r in baseline_report.results}
+    current_checks = {r.check_id: r for r in current_report.results}
+
+    for check_id in sorted(set(baseline_checks.keys()) | set(current_checks.keys())):
         baseline_result = baseline_checks.get(check_id)
-        if baseline_result is None:
-            continue
+        current_result = current_checks.get(check_id)
+        check_diffs: list[str] = []
 
-        # New findings not in baseline
-        baseline_titles = {f.title for f in baseline_result.findings}
-        for finding in current_result.findings:
-            if finding.title not in baseline_titles:
-                sev = finding.severity.value
-                con.print(f"  [red]NEW FINDING[/red] [{sev}] {finding.title}")
-                con.print(f"    Check: {check_id}, Affected: {finding.affected_item}")
-                differences += 1
+        # New check not in baseline
+        if baseline_result is None and current_result is not None:
+            check_diffs.append("  [cyan]NEW CHECK[/cyan] (not in baseline)")
+
+        # Check disappeared
+        if baseline_result is not None and current_result is None:
+            check_diffs.append("  [cyan]REMOVED CHECK[/cyan] (was in baseline)")
+
+        if baseline_result and current_result:
+            # Deep state diffing
+            if check_id in _MULTI_STATE_KEYS:
+                # Checks with dict-of-sub-lists state
+                b_state = baseline_result.context.get("state", {})
+                c_state = current_result.context.get("state", {})
+                if isinstance(b_state, dict) and isinstance(c_state, dict):
+                    for sub_key, id_field, label in _MULTI_STATE_KEYS[check_id]:
+                        b_items = b_state.get(sub_key, [])
+                        c_items = c_state.get(sub_key, [])
+                        if isinstance(b_items, list) and isinstance(c_items, list):
+                            sub_diffs = _diff_state_lists(b_items, c_items, id_field)
+                            for kind, item in sub_diffs:
+                                if kind == "added":
+                                    check_diffs.append(f"  [red]ADDED[/red] {label}: {_fmt_item(item)}")
+                                elif kind == "removed":
+                                    check_diffs.append(f"  [green]REMOVED[/green] {label}: {_fmt_item(item)}")
+                                elif kind == "changed":
+                                    check_diffs.append(f"  [yellow]CHANGED[/yellow] {label}: {_fmt_item(item)}")
+
+            elif check_id in _STATE_KEYS:
+                ctx_key, id_field = _STATE_KEYS[check_id]
+                b_items = baseline_result.context.get(ctx_key, [])
+                c_items = current_result.context.get(ctx_key, [])
+                if isinstance(b_items, list) and isinstance(c_items, list):
+                    sub_diffs = _diff_state_lists(b_items, c_items, id_field)
+                    for kind, item in sub_diffs:
+                        if kind == "added":
+                            check_diffs.append(f"  [red]ADDED[/red] {_fmt_item(item)}")
+                        elif kind == "removed":
+                            check_diffs.append(f"  [green]REMOVED[/green] {_fmt_item(item)}")
+                        elif kind == "changed":
+                            check_diffs.append(f"  [yellow]CHANGED[/yellow] {_fmt_item(item)}")
+
+            # Finding diffing: new and resolved findings
+            baseline_titles = {f.title for f in baseline_result.findings}
+            current_titles = {f.title for f in current_result.findings}
+
+            for finding in current_result.findings:
+                if finding.title not in baseline_titles:
+                    sev = finding.severity.value
+                    check_diffs.append(
+                        f"  [red]NEW FINDING[/red] [{sev}] {finding.title}"
+                    )
+
+            for finding in baseline_result.findings:
+                if finding.title not in current_titles:
+                    sev = finding.severity.value
+                    check_diffs.append(
+                        f"  [green]RESOLVED[/green] [{sev}] {finding.title}"
+                    )
+
+        if check_diffs:
+            check_name = ""
+            if current_result:
+                check_name = current_result.check_name
+            elif baseline_result:
+                check_name = baseline_result.check_name
+            con.print(f"[bold]{check_id}[/bold] ({check_name})")
+            for line in check_diffs:
+                con.print(line)
+            con.print()
+            differences += len(check_diffs)
 
     con.print()
     if differences == 0:
         con.print("[green]No differences found -- system matches baseline.[/green]")
     else:
         con.print(f"[yellow]{differences} difference(s) found between baseline and current system.[/yellow]")
+
+
+def _get_item_key(item: dict, id_field: str | tuple[str, ...]) -> str:
+    """Extract a hashable identity key from a state item."""
+    if isinstance(id_field, tuple):
+        return "|".join(str(item.get(f, "")) for f in id_field)
+    return str(item.get(id_field, ""))
+
+
+def _diff_state_lists(
+    baseline_items: list[dict],
+    current_items: list[dict],
+    id_field: str | tuple[str, ...],
+) -> list[tuple[str, dict]]:
+    """Diff two lists of state dicts by identity field.
+
+    Returns list of (kind, item) where kind is 'added', 'removed', or 'changed'.
+    For 'changed', item includes the key fields plus a '_changes' key describing
+    the differing fields.
+    """
+    diffs: list[tuple[str, dict]] = []
+
+    b_map: dict[str, dict] = {}
+    for item in baseline_items:
+        key = _get_item_key(item, id_field)
+        if key:
+            b_map[key] = item
+
+    c_map: dict[str, dict] = {}
+    for item in current_items:
+        key = _get_item_key(item, id_field)
+        if key:
+            c_map[key] = item
+
+    # Added items (in current but not baseline)
+    for key in sorted(c_map.keys()):
+        if key not in b_map:
+            diffs.append(("added", c_map[key]))
+
+    # Removed items (in baseline but not current)
+    for key in sorted(b_map.keys()):
+        if key not in c_map:
+            diffs.append(("removed", b_map[key]))
+
+    # Changed items (same key, different values)
+    for key in sorted(b_map.keys()):
+        if key in c_map:
+            b_item = b_map[key]
+            c_item = c_map[key]
+            changes: dict[str, tuple] = {}
+            all_fields = set(b_item.keys()) | set(c_item.keys())
+            for field in all_fields:
+                if field.startswith("_"):
+                    continue
+                bval = b_item.get(field)
+                cval = c_item.get(field)
+                if bval != cval:
+                    changes[field] = (bval, cval)
+            if changes:
+                changed_item = dict(c_item)
+                changed_item["_changes"] = changes
+                diffs.append(("changed", changed_item))
+
+    return diffs
+
+
+def _fmt_item(item: dict) -> str:
+    """Format a state item dict for display."""
+    changes = item.pop("_changes", None)
+    # Build a concise representation
+    parts = []
+    for k, v in item.items():
+        if k.startswith("_"):
+            continue
+        sv = str(v)
+        if len(sv) > 80:
+            sv = sv[:77] + "..."
+        parts.append(f"{k}={sv}")
+    result = ", ".join(parts)
+    if changes:
+        change_parts = []
+        for field, (old, new) in changes.items():
+            change_parts.append(f"{field}: {old} -> {new}")
+        result += " | Changes: " + "; ".join(change_parts)
+    return result
 
 
 @main.command(name="update-data")

@@ -41,6 +41,7 @@ class UserAccountsCheck(BaseCheck):
 
     def run(self) -> list[Finding]:
         findings: list[Finding] = []
+        self.context["state"] = {"users": [], "admin_members": []}
 
         self._enumerate_local_users(findings)
         self._check_admin_group(findings)
@@ -90,6 +91,13 @@ class UserAccountsCheck(BaseCheck):
             last_logon = str(user.get("LastLogon", "Never"))
             description = str(user.get("Description", ""))
             sid = str(user.get("SID", {}).get("Value", "")) if isinstance(user.get("SID"), dict) else str(user.get("SID", ""))
+
+            # Capture for baseline state
+            self.context["state"]["users"].append({
+                "name": name,
+                "enabled": enabled,
+                "password_required": pwd_required,
+            })
 
             user_summary_lines.append(
                 f"  {name}: Enabled={enabled}, PwdRequired={pwd_required}, LastLogon={last_logon}"
@@ -244,6 +252,13 @@ class UserAccountsCheck(BaseCheck):
             obj_class = str(member.get("ObjectClass", "Unknown"))
             source = str(member.get("PrincipalSource", "Unknown"))
             sid = str(member.get("SIDValue", ""))
+
+            # Capture for baseline state
+            self.context["state"]["admin_members"].append({
+                "name": name,
+                "object_class": obj_class,
+                "source": source,
+            })
 
             member_lines.append(f"  {name} ({obj_class}, Source: {source}, SID: {sid})")
 

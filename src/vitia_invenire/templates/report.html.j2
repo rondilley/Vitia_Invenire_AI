@@ -28,7 +28,7 @@
   .summary-card { background: white; border-radius: 6px; padding: 15px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
   .summary-card .count { font-size: 2em; font-weight: bold; }
   .summary-card .label { font-size: 0.85em; text-transform: uppercase; opacity: 0.7; }
-  .status-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0; }
+  .status-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin: 15px 0; }
   .status-card { background: white; border-radius: 6px; padding: 12px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
   .status-card .count { font-size: 1.5em; font-weight: bold; }
 
@@ -79,7 +79,9 @@
   .sev-INFO { background: {{ severity_colors.INFO }}; }
   .status { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 0.8em; font-weight: bold; }
   .status-passed { background: #27ae60; color: white; }
-  .status-failed { background: #e74c3c; color: white; }
+  .status-medium { background: #f39c12; color: white; }
+  .status-high { background: #e74c3c; color: white; }
+  .status-critical { background: #c0392b; color: white; font-weight: bold; }
   .status-error { background: #8e44ad; color: white; }
   .status-skipped { background: #bdc3c7; color: #2c3e50; }
 
@@ -165,8 +167,16 @@
     <div class="label">Passed</div>
   </div>
   <div class="status-card">
-    <div class="count" style="color: #e74c3c">{{ failed }}</div>
-    <div class="label">Failed</div>
+    <div class="count" style="color: #f39c12">{{ medium }}</div>
+    <div class="label">Medium</div>
+  </div>
+  <div class="status-card">
+    <div class="count" style="color: #e74c3c">{{ high }}</div>
+    <div class="label">High</div>
+  </div>
+  <div class="status-card">
+    <div class="count" style="color: #c0392b">{{ critical }}</div>
+    <div class="label">Critical</div>
   </div>
   <div class="status-card">
     <div class="count" style="color: #8e44ad">{{ errored }}</div>
@@ -186,7 +196,9 @@
     <div class="cat-overview">
       <span class="cat-stat">{{ stats.check_count }} checks</span>
       <span class="cat-stat" style="color: #a3d9a5;">{{ stats.passed }} passed</span>
-      {% if stats.failed > 0 %}<span class="cat-stat" style="color: #f5b7b1;">{{ stats.failed }} failed</span>{% endif %}
+      {% if stats.medium > 0 %}<span class="cat-stat" style="color: #f9e79f;">{{ stats.medium }} medium</span>{% endif %}
+      {% if stats.high > 0 %}<span class="cat-stat" style="color: #f5b7b1;">{{ stats.high }} high</span>{% endif %}
+      {% if stats.critical > 0 %}<span class="cat-stat" style="color: #e6b0aa;">{{ stats.critical }} critical</span>{% endif %}
       {% if stats.errored > 0 %}<span class="cat-stat" style="color: #d2b4de;">{{ stats.errored }} errors</span>{% endif %}
       {% if stats.skipped > 0 %}<span class="cat-stat" style="color: #d5dbdb;">{{ stats.skipped }} skipped</span>{% endif %}
       <span class="cat-stat">{{ stats.finding_count }} findings</span>

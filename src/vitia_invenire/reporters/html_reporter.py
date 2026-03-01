@@ -54,7 +54,9 @@ def _build_category_data(report: AssessmentReport) -> tuple[OrderedDict, dict]:
     for cat, results in category_results.items():
         check_count = len(results)
         passed = sum(1 for r in results if r.status == "passed")
-        failed = sum(1 for r in results if r.status == "failed")
+        medium = sum(1 for r in results if r.status == "medium")
+        high = sum(1 for r in results if r.status == "high")
+        critical = sum(1 for r in results if r.status == "critical")
         errored = sum(1 for r in results if r.status == "error")
         skipped = sum(1 for r in results if r.status == "skipped")
         finding_count = sum(len(r.findings) for r in results)
@@ -66,7 +68,9 @@ def _build_category_data(report: AssessmentReport) -> tuple[OrderedDict, dict]:
         category_stats[cat] = {
             "check_count": check_count,
             "passed": passed,
-            "failed": failed,
+            "medium": medium,
+            "high": high,
+            "critical": critical,
             "errored": errored,
             "skipped": skipped,
             "finding_count": finding_count,
@@ -121,7 +125,9 @@ def generate(report: AssessmentReport, output_dir: str) -> str:
     # Prepare template data
     total_findings = sum(len(r.findings) for r in report.results)
     passed = sum(1 for r in report.results if r.status == "passed")
-    failed = sum(1 for r in report.results if r.status == "failed")
+    medium = sum(1 for r in report.results if r.status == "medium")
+    high = sum(1 for r in report.results if r.status == "high")
+    critical = sum(1 for r in report.results if r.status == "critical")
     errored = sum(1 for r in report.results if r.status == "error")
     skipped = sum(1 for r in report.results if r.status == "skipped")
 
@@ -144,7 +150,9 @@ def generate(report: AssessmentReport, output_dir: str) -> str:
         report=report,
         total_findings=total_findings,
         passed=passed,
-        failed=failed,
+        medium=medium,
+        high=high,
+        critical=critical,
         errored=errored,
         skipped=skipped,
         all_findings=all_findings,
